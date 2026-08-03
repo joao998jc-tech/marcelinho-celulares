@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1f3d" />
+  <title>MARCELINHO — Celulares Novos e Seminovos</title>
+  <meta name="description" content="MARCELINHO: iPhones e smartphones novos e seminovos, com procedência, garantia e atendimento direto pelo WhatsApp." />
+
+  <!-- LCP do hero = a headline (texto), renderizada por HTML/CSS sem depender
+       do shader nem de imagem. O mascote agora vive na seção "sobre" (abaixo
+       da dobra), então NÃO é mais preload — carrega lazy. -->
+
+  <!-- Google Fonts: Poppins (display) + Inter (UI/corpo). Só os pesos usados. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- CSS por responsabilidade (ordem: tokens -> reset -> base -> layout -> components -> animations) -->
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/reset.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/animations.css" />
+  <!-- Camada do vídeo de fundo controlado por scroll (lateral direita) -->
+  <!-- DESATIVADO TEMPORARIAMENTE (pedido João 2026-07-29): religar removendo o comentário -->
+  <!-- <link rel="stylesheet" href="assets/css/bg-video.css" /> -->
+
+  <!-- Sem JS: os elementos .reveal (que iniciam invisíveis para o scroll-reveal)
+       ficam visíveis, garantindo que a seção "sobre"/mascote e demais conteúdos
+       apareçam mesmo sem JavaScript. -->
+  <noscript>
+    <style>.reveal { opacity: 1 !important; transform: none !important; }</style>
+  </noscript>
+</head>
+<body>
+
+  <!-- ===================== INTRO CINEMATOGRÁFICA (abertura) =====================
+       Abertura na MESMA página (sem trocar URL/reload): mascote + celular 3D
+       + fundo navy. Controlada por assets/js/hero-iphone-3d.js: o celular
+       flutua na palma do mascote, viaja ao centro conforme o scroll
+       (reversível) e, ao clicar no CTA, dá zoom-in e revela o site.
+       Nasce ESCONDIDA no CSS (.intro{display:none}); o módulo liga
+       body.is-intro. Sem JS/WebGL/CDN -> intro oculta e o site aparece
+       normalmente (fallback por omissão) OU intro estática com CTA. -->
+  <div class="intro" id="intro">
+    <!-- Skip acessível (aparece só ao foco de teclado): o site nunca fica
+         inacessível durante a abertura. -->
+    <button class="intro__skip" id="introSkip" type="button">Acessar o site</button>
+
+    <div class="intro__stage">
+      <!-- Mascote: referência visual preservada; micro-animações via CSS/JS.
+           PNG com fundo removido (transparente) p/ compor sobre o navy. -->
+      <div class="intro__mascote">
+        <img class="intro__mascote-img" src="assets/img/mascote-hero.png"
+             alt="Marcelinho apresentando um celular"
+             width="880" height="1040" decoding="async" fetchpriority="high" />
+        <!-- Overlay de olhos p/ piscada (sprite-window do próprio PNG).
+             DESLIGADO por padrão (INTRO_BLINK=false no JS) — ver cabeçalho. -->
+        <span class="intro__eyes" aria-hidden="true"></span>
+      </div>
+      <!-- Palco do celular 3D (canvas fixo do viewport; pointer-events:none).
+           O modelo é o MESMO já usado no projeto (não recriar). -->
+      <div class="intro__phone" aria-hidden="true"></div>
+    </div>
+
+    <!-- CTA de entrada: aparece (fade+translate) quando o celular chega ao
+         centro. Reusa .btn/.btn--primary (tokens de marca). -->
+    <button class="intro__cta btn btn--primary btn--large" id="introCta" type="button" hidden>
+      Acessar o site
+    </button>
+  </div>
+  <!-- Trilho de rolagem da intro: dá altura p/ o scroll conduzir a jornada
+       do celular (reversível). Removido do DOM quando a intro conclui. -->
+  <div class="intro-spacer" aria-hidden="true"></div>
+
+  <!-- ===================== VÍDEO DE FUNDO (scroll-scrubbed) =====================
+       Camada FIXA, atrás do conteúdo (z abaixo de menu/header) e sem capturar
+       cliques. O quadro exibido é amarrado à posição do scroll por
+       assets/js/bg-scroll-video.js: TOPO = mascote com o celular (tela apagada);
+       ao rolar para baixo o celular "voa" descendo; no rodapé (área branca) para
+       no último quadro (celular sozinho, Instagram ligado). Vínculo bidirecional:
+       subir o scroll faz o vídeo regredir. DESKTOP = lateral direita; MOBILE =
+       centralizado (ver bg-video.css). Degradê gracioso: se o vídeo falhar/for
+       reduced-motion, fica o poster estático — o conteúdo nunca depende dele. -->
+  <!-- DESATIVADO TEMPORARIAMENTE (pedido João 2026-07-29): religar removendo o comentário -->
+  <!--
+  <div class="bg-video-layer" aria-hidden="true">
+    <video class="bg-video-layer__video"
+           src="assets/video/mascote-scroll.mp4"
+           poster="assets/img/mascote-video-poster.jpg"
+           muted playsinline preload="metadata"
+           disablepictureinpicture x-webkit-airplay="deny"></video>
+    <img class="bg-video-layer__fallback"
+         src="assets/img/mascote-video-poster.jpg" alt="" />
+  </div>
+  -->
+
+  <!-- ===================== HEADER (só a LOGO, centralizada) =====================
+       Espelha o padrão do BARBER SHOP ERICK GARCIA (Regra 80): cabeçalho
+       minimalista com apenas a logo ao centro; TODA a navegação vive no
+       dock flutuante à direita (ver <nav class="nav-dock"> ao final).
+       Removidos: nav de âncoras, botão "Chamar no WhatsApp" do header e o
+       menu mobile (o botão verde flutuante de WhatsApp já cobre o contato). -->
+  <header class="site-header" id="header">
+    <div class="container header__inner header__inner--centered">
+      <a href="#bemvindo" class="logo" data-target="bemvindo" aria-label="MARCELINHO — página inicial">
+        <!-- Logo oficial (pedido 2026-08-03): wordmark navy do cliente,
+             otimizada (recorte + PNG8) a partir de "logo marcelinho.png".
+             onerror = fallback p/ o wordmark textual (o span abaixo). -->
+        <img class="logo__img" src="assets/img/logo-marcelinho.png" alt="MARCELINHO"
+             width="790" height="120" decoding="async"
+             onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+        <span class="logo__text" hidden>
+          <span class="logo__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="6" y="2" width="12" height="20" rx="2.5"/>
+              <path d="M10 18h4" stroke-linecap="round"/>
+            </svg>
+          </span>
+          MARCELINHO<span class="logo__accent">.</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============================================================
+         ABA 1 · BEM-VINDO (default) — hero + área de Instagram + serviços
+         + contato/orçamento. É a ÚNICA aba com o vídeo de fundo
+         scroll-scrubbed (topo = mascote/tela off → área de Instagram =
+         celular aberto no Instagram). Serviços e Contato ficam aqui embaixo,
+         SEM botão no dock (pedido do João). Padrão SPA espelhado do Erick
+         Garcia: só uma .view fica ativa por vez (ver assets/js/nav.js).
+         ============================================================ -->
+    <section class="view is-active" data-view="bemvindo" aria-label="Bem-vindo">
+
+    <!-- ===================== HERO (ilha escura + rede de partículas) =====================
+         Fundo animado por assets/js/hero-shader.js (canvas 2D): rede de
+         partículas interativas (constelação) que se conectam por linhas e
+         reagem ao ponteiro. Com fallback: sem canvas 2D / reduced-motion,
+         fica só o gradiente de marca do .hero (CSS). O conteúdo (texto)
+         NÃO depende do canvas. -->
+    <section class="hero" id="hero">
+      <!-- Fundo animado (partículas laranja/branco + linhas sobre navy) -->
+      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+      <!-- Scrim navy atrás do texto: pré-requisito de AA sobre fundo animado -->
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow eyebrow--hero hero__eyebrow">Novos &amp; Seminovos · Procedência garantida</p>
+          <h1 class="hero__title">
+            <span>Seu próximo celular,</span><br />
+            <span class="hero__title--accent">com confiança de verdade.</span>
+          </h1>
+          <p class="hero__subtitle">
+            <!-- PLACEHOLDER: texto institucional — ajustar ao tom real do MARCELINHO -->
+            iPhones e smartphones novos e seminovos revisados, com garantia e
+            atendimento direto. Você escolhe pelo site e fecha na hora pelo WhatsApp.
+          </p>
+          <!-- Os 2 botões e as 3 frases de confiança foram removidos a pedido
+               do João; a navegação vive no dock flutuante à direita. -->
+        </div>
+        <!-- O celular 3D migrou para a INTRO cinematográfica (abertura no topo
+             do body): uma mecânica só, sem dois celulares (decisão 4.2). -->
+      </div>
+    </section>
+
+    <!-- ===================== ÁREA DE INSTAGRAM =====================
+         Substitui a antiga seção "Quem é o MARCELINHO" (removida junto com a
+         imagem do mascote a pedido do João). É AQUI que o vídeo de fundo
+         scroll-scrubbed TERMINA: ao chegar nesta área o celular do vídeo
+         aparece aberto no Instagram. O texto chama o cliente para acompanhar
+         as novidades pelo Instagram da loja. O painel à direita é o "palco"
+         reservado para o celular do vídeo pousar — deixado propositalmente
+         vazio (o vídeo de fundo ocupa esse espaço). -->
+    <section class="instagram" id="instagram">
+      <div class="container instagram__inner">
+        <div class="instagram__copy">
+          <p class="eyebrow reveal">Acompanhe o MARCELINHO</p>
+          <h2 class="section-title reveal">Novidade nova toda semana no nosso Instagram.</h2>
+          <p class="instagram__lead reveal">
+            É no Instagram da loja que saem primeiro os aparelhos que acabaram
+            de chegar, as ofertas relâmpago, os seminovos revisados e os
+            bastidores do atendimento. Siga a gente e não perca nenhuma
+            oportunidade — quando você vê por aqui, já pode chamar no WhatsApp.
+          </p>
+          <!-- PLACEHOLDER FASE 2: @ real do Instagram do MARCELINHO.
+               Enquanto não houver o @ oficial, o link aponta para o topo
+               (href="#bemvindo") e o texto usa @marcelinho como exemplo. -->
+          <a href="#bemvindo" class="btn btn--primary btn--large instagram__cta reveal reveal--delay-1"
+             aria-label="Seguir o MARCELINHO no Instagram (FASE 2: @ real do cliente)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>
+            </svg>
+            Seguir @marcelinho <span class="instagram__cta-tag">FASE 2</span>
+          </a>
+          <p class="instagram__note reveal reveal--delay-1">
+            <!-- PLACEHOLDER FASE 2: trocar @marcelinho pelo @ real da loja. -->
+            @marcelinho — <em>usuário de exemplo; substituir pelo Instagram real do cliente na Fase 2.</em>
+          </p>
+        </div>
+
+        <!-- Palco do celular 3D: espaçador INVISÍVEL (pedido 2026-08-02:
+             sem o quadrado tracejado). NÃO remover o elemento: ele dá a
+             altura da seção e é a âncora medida do pouso (KF[1].fx em
+             hero-iphone-3d.js/computeAnchors). -->
+        <div class="instagram__stage" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ===================== SERVIÇOS + CONTATO/ORÇAMENTO ===================== -->
+    <section class="servicos" id="servicos">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow eyebrow--on-navy reveal">Assistência técnica</p>
+          <h2 class="section-title reveal">Quebrou? A gente resolve.</h2>
+          <p class="section-lead reveal">
+            <!-- PLACEHOLDER: serviços de exemplo — confirmar quais o MARCELINHO oferece -->
+            Reparo com peças de qualidade e orçamento sem compromisso, direto no WhatsApp.
+          </p>
+        </div>
+
+        <div class="servicos-grid">
+          <article class="servico-card reveal">
+            <div class="servico-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M8 6l8 8M16 6l-8 8" stroke-linecap="round"/></svg></div>
+            <h3 class="servico-card__title">Troca de tela</h3>
+            <p class="servico-card__text">Display trincado ou sem imagem, com peça de qualidade.</p>
+          </article>
+          <article class="servico-card reveal reveal--delay-1">
+            <div class="servico-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M22 10v4" stroke-linecap="round"/><path d="M7 10v4" stroke-linecap="round"/></svg></div>
+            <h3 class="servico-card__title">Troca de bateria</h3>
+            <p class="servico-card__text">Bateria viciada ou que descarrega rápido demais.</p>
+          </article>
+          <article class="servico-card reveal reveal--delay-2">
+            <div class="servico-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 7l3-3 3 3-3 3" stroke-linejoin="round"/><path d="M17 4 6 15a3 3 0 1 0 3 3L20 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3 class="servico-card__title">Reparos gerais</h3>
+            <p class="servico-card__text">Conector de carga, câmera, botões e mais.</p>
+          </article>
+          <article class="servico-card reveal reveal--delay-3">
+            <div class="servico-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a4 4 0 0 1 4 4v3a6 6 0 0 1-8 0V7a4 4 0 0 1 4-4Z"/><path d="M5 21c1.5-3 4-4 7-4s5.5 1 7 4" stroke-linecap="round"/></svg></div>
+            <h3 class="servico-card__title">Avaliação de usados</h3>
+            <p class="servico-card__text">Quer vender ou dar seu aparelho na troca? A gente avalia.</p>
+          </article>
+        </div>
+
+        <div class="orcamento">
+          <!-- Formulário front-only: monta a mensagem e abre o WhatsApp -->
+          <form class="form-card" id="orcamentoForm" novalidate>
+            <div class="form-field">
+              <label for="f-nome">Seu nome <span class="req">*</span></label>
+              <input class="form-control" type="text" id="f-nome" name="nome" autocomplete="name" placeholder="Como podemos te chamar?" />
+              <span class="form-error" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="f-interesse">O que você procura? <span class="req">*</span></label>
+              <input class="form-control" type="text" id="f-interesse" name="interesse" placeholder="Ex.: iPhone 13, troca de tela, avaliar meu usado..." />
+              <span class="form-error" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="f-condicao">Prefere novo ou seminovo?</label>
+              <select class="form-control" id="f-condicao" name="condicao">
+                <option value="">Tanto faz / não sei</option>
+                <option value="Novo">Novo</option>
+                <option value="Seminovo">Seminovo</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="f-mensagem">Observações (opcional)</label>
+              <textarea class="form-control" id="f-mensagem" name="mensagem" placeholder="Cor preferida, orçamento, dúvidas..."></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--large btn--block">
+              Enviar pelo WhatsApp
+            </button>
+            <p class="form-note">Ao enviar, abrimos o WhatsApp com sua mensagem já pronta. Nenhum dado é armazenado neste site.</p>
+            <p class="form-success" role="status">Tudo certo! Abrimos o WhatsApp numa nova aba — é só enviar a mensagem.</p>
+          </form>
+
+          <aside class="orcamento__aside">
+            <p class="eyebrow eyebrow--on-navy reveal">Por que o MARCELINHO</p>
+            <h2 class="section-title reveal" style="color:#fff;">Confiança do primeiro contato à entrega.</h2>
+            <ul class="orcamento__list reveal reveal--delay-1">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg> Procedência conferida em cada aparelho, novo ou seminovo.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg> Garantia e atendimento direto, sem intermediário.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg> Resposta ágil pelo WhatsApp, do orçamento ao pós-venda.</li>
+            </ul>
+            <!-- PLACEHOLDER: condições comerciais reais (parcelamento, prazo de garantia) -->
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    </section><!-- /.view[data-view=bemvindo] -->
+
+    <!-- ============================================================
+         ABA 2 · APARELHOS — catálogo + filtros. Aberta pelo botão
+         "Aparelhos" do dock, e também quando o cliente escolhe um tipo no
+         dropdown "Categorias" (que já aplica o filtro correspondente).
+         MESMA aparência do catálogo já criado e MESMA dinâmica de pedido:
+         cada card abre o WhatsApp pré-preenchido (products.js, intacto).
+         ============================================================ -->
+    <section class="view" data-view="aparelhos" aria-label="Aparelhos">
+      <section class="catalogo" id="catalogo">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow reveal">Aparelhos</p>
+            <h2 class="section-title reveal">Escolha o seu e fale com a gente.</h2>
+            <p class="section-lead reveal">
+              Filtre por condição ou marca. Em cada aparelho, o botão já abre o
+              WhatsApp com a mensagem pronta (modelo, cor, condição e valor).
+            </p>
+          </div>
+
+          <!-- PLACEHOLDER: catálogo abaixo é 100% DE EXEMPLO (dados em
+               assets/js/products.js). Trocar por catálogo e fotos reais.
+               Os filtros (.filters) e os cards (.vitrine-grid) são
+               injetados por products.js. -->
+          <div class="vitrine-grid"></div>
+        </div>
+      </section>
+    </section><!-- /.view[data-view=aparelhos] -->
+
+    <!-- ============================================================
+         ABA 3 · ACESSÓRIOS — aba própria, mesma dinâmica de pedido
+         via WhatsApp. Aberta pelo botão "Acessórios" do dock.
+         ============================================================ -->
+    <section class="view" data-view="acessorios" aria-label="Acessórios">
+      <section class="acessorios" id="acessorios">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow reveal">Acessórios</p>
+            <h2 class="section-title reveal">Complete a compra do seu jeito.</h2>
+            <p class="section-lead reveal">
+              Capas, películas, carregadores e fones — dados de exemplo, ajustar
+              ao estoque real do MARCELINHO.
+            </p>
+          </div>
+          <!-- PLACEHOLDER: acessórios de exemplo (products.js) -->
+          <div class="acessorios-grid"></div>
+        </div>
+      </section>
+    </section><!-- /.view[data-view=acessorios] -->
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer" id="contato">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="logo logo--footer">
+          <!-- Logo oficial + fallback textual (mesmo padrão do header) -->
+          <img class="logo__img" src="assets/img/logo-marcelinho.png" alt="MARCELINHO"
+               width="790" height="120" loading="lazy" decoding="async"
+               onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+          <span class="logo__text" hidden>
+            <span class="logo__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4" stroke-linecap="round"/></svg>
+            </span>
+            MARCELINHO<span class="logo__accent">.</span>
+          </span>
+        </span>
+        <p class="footer__tagline">
+          Celulares novos e seminovos com procedência, garantia e atendimento
+          direto pelo WhatsApp.
+        </p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Links do rodapé">
+        <div class="footer__col">
+          <h4 class="footer__heading">Navegação</h4>
+          <ul>
+            <!-- Links do rodapé usam data-target -> passam pelo roteador de abas
+                 (SPA). Serviços vive na aba Bem-vindo: troca de aba E rola até a
+                 seção (data-scroll). Assim nenhum link aponta para seção oculta. -->
+            <li><a href="#bemvindo" data-target="bemvindo">Início</a></li>
+            <li><a href="#aparelhos" data-target="aparelhos">Aparelhos</a></li>
+            <li><a href="#acessorios" data-target="acessorios">Acessórios</a></li>
+            <li><a href="#servicos" data-target="bemvindo" data-scroll="#servicos">Serviços</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__heading">Contato</h4>
+          <ul>
+            <!-- PLACEHOLDER: dados reais do MARCELINHO -->
+            <li><a href="https://wa.me/55SEUNUMERO" target="_blank" rel="noopener">WhatsApp — (00) 00000-0000</a></li>
+            <li><a href="tel:+5500000000000">Telefone — (00) 0000-0000</a></li>
+            <li>Endereço: Rua Exemplo, 000 — Sarapuí/SP</li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__heading">Atendimento</h4>
+          <ul>
+            <!-- PLACEHOLDER: horário e redes reais -->
+            <li>Seg a Sex: 00h — 00h</li>
+            <li>Sábado: 00h — 00h</li>
+            <!-- PLACEHOLDER FASE 2: @ real do Instagram do cliente. -->
+            <li><a href="#instagram" data-target="bemvindo" data-scroll="#instagram">Instagram — @marcelinho</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container footer__bottom">
+      <p>&copy; <span id="year"></span> MARCELINHO. Todos os direitos reservados.</p>
+      <p class="footer__note">Protótipo de vitrine — aparelhos, preços, fotos e contatos são de EXEMPLO (placeholder), a serem substituídos pelos dados reais do cliente.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== WHATSAPP FLUTUANTE ===================== -->
+  <!-- PLACEHOLDER: 55SEUNUMERO = número real do WhatsApp -->
+  <a href="https://wa.me/55SEUNUMERO?text=Ol%C3%A1%2C%20MARCELINHO!%20Vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es."
+     class="float-whatsapp" target="_blank" rel="noopener"
+     aria-label="Falar com o MARCELINHO no WhatsApp">
+    <svg class="float-whatsapp__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9 0-2.64-1.03-5.13-2.9-7C17.18 3.03 14.68 2 12.04 2Zm5.8 14.14c-.24.68-1.4 1.31-1.93 1.35-.5.05-1 .24-3.37-.7-2.86-1.14-4.7-4.04-4.84-4.23-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.26-.28.57-.35.76-.35.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.83 2 .9 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.08.17-.21.72-.84.92-1.13.19-.29.38-.24.63-.14.26.1 1.65.78 1.93.92.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/>
+    </svg>
+    <span class="float-whatsapp__label">WhatsApp</span>
+  </a>
+
+  <!-- ============================================================
+       DOCK DE NAVEGAÇÃO FLUTUANTE (direita) — espelha o Erick Garcia (Regra 80).
+       Navegação in-page tipo SPA (NÃO abre link externo):
+        • CATEGORIAS  = botão com seta que abre um dropdown com os TIPOS de
+          item (Novos/Seminovos/Ofertas/marcas). Escolher um tipo troca para a
+          aba Aparelhos JÁ FILTRADA por aquele tipo. As opções do dropdown são
+          injetadas por products.js (fonte única = FILTERS), e cada uma chama
+          applyFilter(tipo,valor) + abre a aba Aparelhos.
+        • APARELHOS   = abre a aba de aparelhos (data-target).
+        • ACESSÓRIOS  = abre a aba de acessórios (data-target).
+       Serviços e Contato NÃO têm botão aqui (ficam na aba Bem-vindo, embaixo).
+       ============================================================ -->
+  <nav class="nav-dock" aria-label="Navegação rápida">
+    <div class="nav-dock__group">
+      <button class="nav-dock__btn" id="dockCategorias" type="button"
+              aria-expanded="false" aria-controls="dockCategoriasMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
+        </svg>
+        <span>Categorias</span>
+        <svg class="nav-dock__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <!-- Opções (TIPOS) injetadas por products.js a partir de FILTERS.
+           Disclosure honesto: lista de botões (sem role=menu, que prometeria
+           navegação por setas não implementada). aria-expanded no botão. -->
+      <div class="nav-dock__menu" id="dockCategoriasMenu" aria-label="Tipos de aparelho" hidden></div>
+    </div>
+
+    <button class="nav-dock__btn" type="button" data-target="aparelhos" aria-current="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <rect x="6" y="2" width="12" height="20" rx="2.5"/>
+        <path d="M10 18h4" stroke-linecap="round"/>
+      </svg>
+      <span>Aparelhos</span>
+    </button>
+
+    <button class="nav-dock__btn" type="button" data-target="acessorios" aria-current="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <path d="M4 8h16l-1 12H5L4 8Z"/>
+        <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" stroke-linecap="round"/>
+      </svg>
+      <span>Acessórios</span>
+    </button>
+  </nav>
+
+  <!-- JS vanilla, sem dependências. Ordem: nav -> products -> scroll-reveal -> main.
+       products.js injeta os cards .reveal ANTES de scroll-reveal.js observá-los. -->
+  <!-- Three.js p/ o celular 3D da INTRO — mesma fonte/versão do playbook
+       SLAMDUNK-STORE (Regra 80). O módulo importa 'three' DINAMICAMENTE, então
+       o importmap precisa estar disponível quando ele rodar. -->
+  <script type="importmap">
+  {"imports":{"three":"https://esm.sh/three@0.182.0"}}
+  </script>
+  <script src="assets/js/nav.js" defer></script>
+  <script src="assets/js/products.js" defer></script>
+  <script src="assets/js/scroll-reveal.js" defer></script>
+  <script src="assets/js/hero-shader.js" defer></script>
+  <!-- INTRO cinematográfica (módulo ESM = deferido por padrão; se falhar o
+       import/CDN, a intro fica estática com CTA e o site segue acessível) -->
+  <script type="module" src="assets/js/hero-iphone-3d.js"></script>
+  <!-- Vídeo de fundo amarrado ao scroll (bidirecional) — autocontido -->
+  <!-- DESATIVADO TEMPORARIAMENTE (pedido João 2026-07-29): religar removendo o comentário -->
+  <!-- <script src="assets/js/bg-scroll-video.js" defer></script> -->
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+/* =========================================================
+   BG-VIDEO — MARCELINHO
+   Camada FIXA do vídeo de fundo controlado por scroll
+   (mecânica de scrub em bg-scroll-video.js).
+
+   >>> FUNDO RECOMPOSTO (cinza eliminado) <<<
+   O cinza de estúdio do vídeo foi REMOVIDO no arquivo: o mascote é
+   recortado por um matte (opaco onde é colorido OU escuro; transparente
+   no cinza médio neutro) e recomposto sobre um fundo que faz a transição
+   TEMPORAL navy-deep(#0b1f3d) -> claro(#f5f8fc), casando com as seções
+   que o vídeo cruza (hero navy no topo -> área de Instagram clara no fim).
+   Assim o retângulo cinza desaparece e o vídeo "faz parte" da página nas
+   duas âncoras. MP4 comum (compatível iOS), all-intra p/ scrub. Tratamento:
+   - opacidade ALTA (elemento de fundo protagonista, não sutil);
+   - VINHETA radial (feather mask) dissolvendo as 4 bordas -> não vira
+     "caixinha"/retângulo, e como o fundo já casa com a seção, a borda
+     dissolve sem costura;
+   - DESKTOP ancorado à DIREITA (onde a coluna fica livre no hero e o
+     "palco" da área de Instagram); MOBILE centralizado.
+   O vídeo aparece só na aba "Bem-vindo" (onde o scrub termina na área de
+   Instagram); nas abas Aparelhos/Acessórios a camada é ocultada
+   (.is-inactive) para não cobrir o catálogo.
+
+   Fica abaixo do dock(85)/header(100) e sem capturar cliques
+   (pointer-events:none). O conteúdo/texto nunca depende dele
+   (degradê gracioso: poster estático se o vídeo falhar).
+   ========================================================= */
+
+.bg-video-layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--bgvideo-z, 80); /* abaixo de dock(85)/header(100) */
+  pointer-events: none;          /* nunca bloqueia cliques/seleção */
+  overflow: hidden;              /* não gera scroll horizontal */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;     /* DESKTOP: lateral direita */
+  contain: strict;               /* isola layout/paint desta camada */
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+/* Fora da aba "Bem-vindo": esconde o vídeo (não deve cobrir o catálogo). */
+.bg-video-layer.is-inactive { display: none; }
+
+/* Depois de PASSAR a área de Instagram (bg-scroll-video.js aplica .is-past): o
+   vídeo já cumpriu o papel (mostrou o quadro final) e some — não cobre o
+   formulário de Serviços/Contato. Some suave; reaparece ao subir de volta. */
+.bg-video-layer.is-past { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .bg-video-layer { transition: none; }
+}
+
+/* O vídeo (e o poster de fallback) compartilham enquadramento/vinheta.
+   object-fit: contain mantém o quadro final (celular aberto no Instagram)
+   INTEIRO e visível — nunca cortado. A vinheta abaixo evita o retângulo. */
+.bg-video-layer__video,
+.bg-video-layer__fallback {
+  display: block;
+  height: var(--bgvideo-h, 92svh);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  /* Vinheta radial: dissolve as 4 bordas -> sem "caixinha"/retângulo. */
+  -webkit-mask-image: radial-gradient(
+    ellipse 66% 64% at 50% 48%,
+    #000 0%,
+    #000 52%,
+    rgba(0, 0, 0, 0.6) 74%,
+    transparent 90%
+  );
+  mask-image: radial-gradient(
+    ellipse 66% 64% at 50% 48%,
+    #000 0%,
+    #000 52%,
+    rgba(0, 0, 0, 0.6) 74%,
+    transparent 90%
+  );
+}
+
+/* Sem blend: o fundo já foi recomposto no arquivo (navy->claro), então o
+   vídeo entra normal (bold), sem hacks de mix-blend-mode. */
+.bg-video-layer__video {
+  mix-blend-mode: normal;
+  opacity: var(--bgvideo-opacity, 1);
+}
+
+/* Poster de fallback: some por padrão; aparece só quando o vídeo falha. */
+.bg-video-layer__fallback {
+  display: none;
+  opacity: var(--bgvideo-opacity, 1);
+}
+.bg-video-layer.is-failed .bg-video-layer__video {
+  display: none;
+}
+.bg-video-layer.is-failed .bg-video-layer__fallback {
+  display: block;
+}
+
+/* ---------- MOBILE (< 900px): mais CENTRALIZADO ---------- */
+/* Falta de espaço livre -> o vídeo vem para o centro. Segue bold (o João
+   pediu "bem visual"); o ajuste fino de legibilidade de texto sobre o vídeo
+   é follow-up explícito ("depois ajustamos os textos"). */
+@media (max-width: 899px) {
+  .bg-video-layer {
+    justify-content: center;
+  }
+  .bg-video-layer__video,
+  .bg-video-layer__fallback {
+    height: var(--bgvideo-h-mobile, 62svh);
+  }
+  .bg-video-layer__video {
+    opacity: var(--bgvideo-opacity-mobile, 0.9);
+  }
+  .bg-video-layer__fallback {
+    opacity: var(--bgvideo-opacity-mobile, 0.9);
+  }
+}
+
+/* ---------- REDUÇÃO DE MOVIMENTO: 1 quadro estático ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .bg-video-layer__video,
+  .bg-video-layer__fallback {
+    transition: none !important;
+  }
+}

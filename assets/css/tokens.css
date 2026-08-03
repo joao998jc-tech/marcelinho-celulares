@@ -1,0 +1,161 @@
+/* =========================================================
+   DESIGN TOKENS — MARCELINHO
+   Fonte ÚNICA de decisões visuais (paleta, tipografia,
+   espaçamento, motion) — nada de valor "cru" nos outros CSS.
+
+   Identidade extraída do logo/mascote MARCELINHO:
+   - AZUL-MARINHO (navy): cor de marca / estrutura / confiança.
+     Vem da camisa do mascote e do texto "MARCELINHO" do logo.
+   - LARANJA: cor de energia / ação / CTA / preço.
+     Vem do ícone de celular do logo.
+
+   TEMA CLARO (light), de propósito — diferente do Decotime
+   (escuro/luxo). Loja de celular pede leveza, clareza e
+   sensação de confiança/agilidade, não "heritage/luxo".
+   (O mascote agora vive na INTRO cinematográfica, com fundo
+   removido/transparente — ver .intro__mascote em layout.css.)
+   ========================================================= */
+
+:root {
+  /* --- Cor: base / superfícies (tema claro) --- */
+  --color-bg: #f5f8fc;            /* fundo geral levemente azulado */
+  --color-bg-elevated: #ffffff;   /* seções "cartão" / faixas claras */
+  --color-surface: #ffffff;       /* cards */
+  --color-surface-soft: #eef3fa;  /* preenchimentos suaves / placeholders */
+  --color-border: #d7e0ec;
+  --color-border-soft: #e6ecf5;
+
+  /* --- Cor: texto (sobre fundo claro; todos >= AA 4.5:1) --- */
+  --color-text-primary: #12264a;   /* navy quase-preto */
+  --color-text-secondary: #445069; /* ~7:1 sobre branco */
+  --color-text-muted: #5f6b82;     /* ~5.3:1 sobre branco / ~4.9:1 sobre --color-bg */
+  --color-white: #ffffff;
+
+  /* --- Cor: AZUL-MARINHO (marca) --- */
+  --color-navy: #163a6b;           /* marca principal */
+  --color-navy-strong: #0f2b52;    /* hover / faixas escuras */
+  --color-navy-deep: #0b1f3d;      /* seção navy (texto claro por cima) */
+  --color-navy-soft: rgba(22, 58, 107, 0.08);
+  --color-navy-tint: #e8eff8;      /* fundo suave azulado */
+
+  /* --- Cor: LARANJA (ação / energia / preço) --- */
+  --color-orange: #f26a1b;         /* laranja vibrante (fills, glows, CTA) */
+  --color-orange-strong: #d9550f;  /* hover de fills laranja */
+  --color-orange-ink: #b5500f;     /* laranja p/ TEXTO sobre branco (>=4.5:1) */
+  --color-orange-soft: rgba(242, 106, 27, 0.12);
+  --color-orange-tint: #fdeede;
+
+  /* --- Cor: verde (semântico "NOVO/lacrado" — uso só em badge) --- */
+  --color-green: #17864a;
+  --color-green-soft: rgba(23, 134, 74, 0.12);
+
+  /* --- Cor: WhatsApp (verde — botão flutuante/geral/por produto) ---
+     Ajustado para contraste WCAG AA com texto branco: #0e8040 = 5.02:1
+     (o verde original #1faa54 dava só 3.03:1, reprovava AA). Verificado
+     via cálculo de luminância relativa (não estimado no olho). */
+  --color-whats: #0e8040;
+  --color-whats-strong: #0a6733;
+
+  /* --- Tipografia ---
+     Poppins: display/headings (amigável, confiante, moderno).
+     Inter: corpo/UI (legibilidade alta em mobile).
+     Ambas via Google Fonts (CDN) — ver <link> no index.html. */
+  --font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.9rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.15rem;
+  --fs-xl: 1.4rem;
+  --fs-2xl: clamp(1.6rem, 1.25rem + 1.6vw, 2.4rem);
+  --fs-3xl: clamp(2rem, 1.4rem + 2.8vw, 3.2rem);
+  --fs-hero: clamp(2.3rem, 1.4rem + 4.4vw, 4.4rem);
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.32;
+  --lh-normal: 1.62;
+
+  /* --- Espaçamento (escala 4px) --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* --- Layout --- */
+  --container-max: 1240px;
+  --container-pad: clamp(1.25rem, 4vw, 3rem);
+
+  /* --- Efeitos --- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 180ms;
+  --duration-base: 420ms;
+  --duration-slow: 760ms;
+
+  --shadow-sm: 0 2px 8px rgba(15, 43, 82, 0.06);
+  --shadow-md: 0 12px 30px rgba(15, 43, 82, 0.10);
+  --shadow-lg: 0 28px 60px rgba(15, 43, 82, 0.16);
+  --shadow-orange-glow: 0 14px 34px rgba(242, 106, 27, 0.30);
+
+  /* =========================================================
+     HERO ESCURO — ILHA SHADER WebGL2
+     ---------------------------------------------------------
+     O hero é a ÚNICA seção escura do site (ilha pontual); o
+     corpo segue CLARO. Cores decididas pelo Coordenador de
+     Referências (nunca preto, navy dominante, laranja/branco
+     só como luz de acento). Tudo referenciando a marca.
+     ========================================================= */
+  --hero-bg: var(--color-navy-deep);          /* #0b1f3d — base da cena (NUNCA preto) */
+  --hero-bg-strong: var(--color-navy-strong); /* #0f2b52 — modulação da nebulosa */
+  --hero-bg-apex: var(--color-navy);          /* #163a6b — ápice pontual da nuvem */
+
+  /* Scrim/overlay navy atrás do bloco de texto — PRÉ-REQUISITO de AA
+     sobre fundo animado (sem ele o contraste não é auditável). */
+  --hero-scrim-strong: rgba(11, 31, 61, 0.78);
+  --hero-scrim-soft: rgba(11, 31, 61, 0.0);
+
+  /* Luzes das partículas (2 restritas): ~70% laranja / ~30% branco */
+  --hero-particle-warm: var(--color-orange);  /* #f26a1b */
+  --hero-particle-cool: #ffffff;
+
+  /* Gradiente de TEXTO só da headline (laranja só no fim = faísca) */
+  --hero-title-from: #ffffff;
+  --hero-title-mid: var(--color-navy-tint);   /* #e8eff8 */
+  --hero-title-to: var(--color-orange);       /* #f26a1b */
+
+  /* Texto sobre escuro (AA calculado): branco ~16:1 / branco 88% p/ corpo */
+  --hero-text: #ffffff;
+  --hero-text-soft: rgba(255, 255, 255, 0.88);
+
+  /* Superfície "vidro" do CTA secundário (glassmorphism, só CSS) */
+  --hero-glass-bg: rgba(232, 239, 248, 0.08);
+  --hero-glass-border: rgba(232, 239, 248, 0.38);
+
+  --hero-shader-cycle: 32s; /* referência do ciclo LENTO da nebulosa (doc) */
+
+  /* =========================================================
+     VÍDEO DE FUNDO (scroll-scrubbed) — ajustes centralizados
+     ---------------------------------------------------------
+     Camada fixa (lateral direita no desktop / centralizada no
+     mobile). O cinza foi ELIMINADO no arquivo: mascote recortado por
+     matte e recomposto sobre fundo navy->claro (casa com as seções);
+     tratamento bold + vinheta de feather em bg-video.css. Estes tokens
+     são os pontos de ajuste fino de enquadramento/opacidade.
+     ========================================================= */
+  --bgvideo-z: 80;                    /* abaixo de dock(85)/header(100) */
+  --bgvideo-h: 92svh;                 /* altura do vídeo no desktop */
+  --bgvideo-h-mobile: 62svh;          /* altura no mobile (mais compacto) */
+  --bgvideo-opacity: 1;               /* bold, sem transparência (pedido do João) */
+  --bgvideo-opacity-mobile: 0.9;      /* mobile ainda bold (ajuste de texto = follow-up) */
+}

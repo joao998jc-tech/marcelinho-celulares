@@ -1,0 +1,776 @@
+/* =========================================================
+   COMPONENTES — MARCELINHO
+   Elementos reutilizáveis: logo, nav, botões, mascote do hero
+   (fallback + sprite parametrizado), cards de categoria,
+   cards de produto (badges NOVO/SEMINOVO), acessórios,
+   serviços, formulário de orçamento, WhatsApp flutuante.
+   ========================================================= */
+
+/* ---------- LOGO / WORDMARK ---------- */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+
+/* Marca desenhada em CSS/SVG (ícone de celular laranja+navy),
+   já que ainda NÃO temos o arquivo de logo oficial isolado do
+   cliente. PLACEHOLDER visual até o logo real chegar. */
+.logo__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--color-navy);
+  color: var(--color-orange);
+  flex-shrink: 0;
+}
+
+.logo__mark svg { width: 18px; height: 18px; }
+
+.logo__accent { color: var(--color-orange); }
+
+/* Logo oficial em imagem (2026-08-03). Navy sobre header/footer CLAROS
+   (rgba branco / --color-bg-elevated) = contraste ok sem tratamento.
+   O wordmark textual segue no HTML como fallback de onerror. */
+.logo__img {
+  display: block;
+  height: 30px;   /* 790×120 fonte → nítida em retina */
+  width: auto;
+}
+.logo__text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.logo__text[hidden] { display: none; }
+
+.logo--footer { font-size: var(--fs-xl); }
+.logo--footer .logo__img { height: 36px; }
+
+/* ---------- NAV LINKS ---------- */
+.nav__link {
+  position: relative;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-orange);
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.nav__link:hover { color: var(--color-navy); }
+.nav__link:hover::after { width: 100%; }
+
+.footer__col a { transition: color var(--duration-fast) var(--ease-out); }
+.footer__col a:hover { color: var(--color-orange-ink); }
+
+/* ---------- MENU TOGGLE (hamburger) ---------- */
+.menu-toggle__bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  margin-inline: auto;
+  background: var(--color-navy);
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-base) var(--ease-out),
+              opacity var(--duration-base) var(--ease-out);
+}
+
+.menu-toggle.is-active .menu-toggle__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-toggle.is-active .menu-toggle__bar:nth-child(2) { opacity: 0; }
+.menu-toggle.is-active .menu-toggle__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- BOTÕES ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--fs-sm);
+  min-height: 44px; /* alvo de toque acessível */
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+
+.btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Primário = laranja de marca, texto navy (par navy+laranja, AA ok) */
+.btn--primary {
+  background: var(--color-orange);
+  color: var(--color-text-primary);
+}
+.btn--primary:hover {
+  background: var(--color-orange-strong);
+  color: #fff;
+  box-shadow: var(--shadow-orange-glow);
+  transform: translateY(-2px);
+}
+
+/* Navy sólido = ação secundária forte / header */
+.btn--navy {
+  background: var(--color-navy);
+  color: #fff;
+}
+.btn--navy:hover {
+  background: var(--color-navy-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Ghost = contorno navy sobre fundo claro */
+.btn--ghost {
+  border: 1.5px solid var(--color-border);
+  color: var(--color-navy);
+  background: transparent;
+}
+.btn--ghost:hover {
+  border-color: var(--color-orange);
+  color: var(--color-orange-ink);
+  transform: translateY(-2px);
+}
+
+/* Ghost claro (sobre faixa navy escura) */
+.btn--ghost-light {
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  background: transparent;
+}
+.btn--ghost-light:hover {
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+  transform: translateY(-2px);
+}
+
+/* Glass = CTA secundário do HERO escuro (vidro translúcido navy-tint).
+   Borda clara (nunca laranja — o laranja é do CTA primário), texto branco. */
+.btn--glass {
+  border: 1.5px solid var(--hero-glass-border);
+  color: #fff;
+  background: var(--hero-glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.btn--glass:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(232, 239, 248, 0.16);
+  transform: translateY(-2px);
+}
+/* Mobile: sem blur contínuo (protege INP no toque do CTA); fundo sólido. */
+@media (max-width: 760px) {
+  .btn--glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(11, 31, 61, 0.5);
+  }
+}
+
+.btn--large { padding: var(--space-4) var(--space-8); font-size: var(--fs-base); }
+.btn--small { padding: var(--space-2) var(--space-4); min-height: 40px; }
+.btn--block { width: 100%; }
+
+/* Botão WhatsApp de produto = verde WhatsApp (reconhecível) */
+.btn--whats {
+  background: var(--color-whats);
+  color: #fff;
+}
+.btn--whats:hover {
+  background: var(--color-whats-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* O scaffolding do mascote do hero (fallback estático + sprite parametrizado
+   + badge) foi removido: o mascote agora é a peça central da INTRO
+   cinematográfica (ver .intro__mascote em layout.css). */
+
+/* ---------- CARDS: CATEGORIA (atalhos) ---------- */
+.categoria-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+.categoria-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-orange);
+  box-shadow: var(--shadow-md);
+}
+.categoria-card__icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-navy-soft);
+  color: var(--color-navy);
+}
+.categoria-card__icon svg { width: 24px; height: 24px; }
+.categoria-card__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+}
+.categoria-card__text {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- FILTROS DE CATEGORIA (injetados por products.js) ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+.filters .filter {
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  min-height: 40px;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.filters .filter:hover {
+  color: var(--color-navy);
+  border-color: var(--color-orange);
+}
+.filters .filter.is-active {
+  color: #fff;
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+}
+
+/* ---------- BADGES ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+}
+/* NOVO = verde (lacrado/novo). SEMINOVO = navy (revisado/confiável).
+   Cores distintas e semânticas, sem depender só de texto. */
+.badge--novo {
+  background: var(--color-green);
+  color: #fff;
+}
+.badge--seminovo {
+  background: var(--color-navy);
+  color: #fff;
+}
+.badge--oferta {
+  background: var(--color-orange);
+  color: #fff;
+}
+
+/* ---------- CARDS: PRODUTO (CATÁLOGO) ---------- */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-orange);
+  box-shadow: var(--shadow-md);
+}
+
+.product-card__media { position: relative; }
+
+.product-card__badges {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* PLACEHOLDER de foto do aparelho (não temos fotos reais ainda).
+   Bloco explícito "IMAGEM DE EXEMPLO" com ícone de celular. */
+.photo-placeholder {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(160deg, var(--color-surface-soft), var(--color-navy-tint));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.photo-placeholder__label {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: var(--space-4);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  max-width: 22ch;
+}
+.photo-placeholder__icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto var(--space-2);
+  color: var(--color-navy);
+  opacity: 0.5;
+}
+
+/* Foto real do aparelho (substitui .photo-placeholder quando o
+   cliente enviar as fotos). width/height reais evitam CLS. */
+.product-card__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--color-surface-soft);
+}
+
+.product-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  flex: 1;
+}
+.product-card__brand {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.product-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+}
+.product-card__meta {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+.product-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.product-card__price-old {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+.product-card__price-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  color: var(--color-orange-ink);
+}
+.product-card__installment {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+.product-card__actions {
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+/* ---------- CARDS: ACESSÓRIO ---------- */
+.acessorio-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
+}
+.acessorio-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-orange);
+}
+.acessorio-card .photo-placeholder { aspect-ratio: 1 / 1; }
+.acessorio-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  flex: 1;
+}
+.acessorio-card__cat {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-orange-ink);
+}
+.acessorio-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-base);
+}
+.acessorio-card__price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-top: var(--space-1);
+}
+.acessorio-card__actions { margin-top: auto; padding-top: var(--space-3); }
+
+/* ---------- CARDS: SERVIÇO (sobre faixa navy) ---------- */
+.servico-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out),
+              background var(--duration-base) var(--ease-out);
+}
+.servico-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-orange);
+  background: rgba(255, 255, 255, 0.09);
+}
+.servico-card__icon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-orange);
+  margin-bottom: var(--space-4);
+}
+.servico-card__icon svg { width: 100%; height: 100%; }
+.servico-card__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  color: #fff;
+  margin-bottom: var(--space-2);
+}
+.servico-card__text {
+  font-size: var(--fs-sm);
+  color: #b9c8de;
+}
+
+/* ---------- FORMULÁRIO DE ORÇAMENTO ---------- */
+.form-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.form-field label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.form-field .req { color: var(--color-orange-ink); }
+.form-control {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  min-height: 46px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+.form-control::placeholder { color: var(--color-text-muted); }
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 3px var(--color-orange-soft);
+}
+textarea.form-control { min-height: 110px; resize: vertical; }
+
+/* Estado de erro de validação (aplicado por main.js) */
+.form-field.has-error .form-control { border-color: #d64545; }
+.form-error {
+  font-size: var(--fs-xs);
+  color: #c53030;
+  min-height: 1em;
+}
+.form-note {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-3);
+}
+.form-success {
+  display: none;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-green-soft);
+  color: var(--color-green);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.form-success.is-visible { display: block; }
+
+/* Cartão-resumo de confiança ao lado do formulário */
+.orcamento__aside {
+  color: #eaf1fb;
+}
+.orcamento__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+.orcamento__list li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  font-size: var(--fs-base);
+  color: #cdd9ea;
+}
+.orcamento__list svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-orange);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ---------- WHATSAPP FLUTUANTE ---------- */
+.float-whatsapp {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  min-height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--color-whats);
+  color: #fff;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  box-shadow: 0 12px 30px rgba(31, 170, 84, 0.4);
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.float-whatsapp:hover {
+  background: var(--color-whats-strong);
+  transform: translateY(-2px) scale(1.03);
+}
+.float-whatsapp__icon { width: 26px; height: 26px; flex-shrink: 0; }
+.float-whatsapp__label { display: none; }
+
+@media (min-width: 560px) {
+  .float-whatsapp__label { display: inline; }
+}
+@media (max-width: 559px) {
+  .float-whatsapp {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    padding: var(--space-3);
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+  }
+}
+
+/* ---------- DOCK DE NAVEGAÇÃO FLUTUANTE (navegação única) ----------
+   Espelha o padrão do BARBER SHOP ERICK GARCIA (Regra 80), adaptando só o
+   branding (navy/laranja, tema claro). Fixo no meio-direito do viewport,
+   sempre visível em mobile E desktop: o topo tem só a logo. z-index 85:
+   acima do vídeo de fundo (80), abaixo do header (100) e sem colidir com o
+   WhatsApp flutuante (60, no canto inferior). */
+.nav-dock {
+  position: fixed;
+  top: 50%;
+  right: calc(env(safe-area-inset-right, 0px) + var(--space-2));
+  transform: translateY(-50%);
+  z-index: 85;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  animation: dock-in var(--duration-base) var(--ease-out) both;
+}
+.nav-dock__group { position: relative; display: flex; }
+.nav-dock__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 64px;
+  min-height: 58px;
+  padding: var(--space-2) 4px;
+  border-radius: var(--radius-full);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-align: center;
+  transition: background var(--duration-fast), color var(--duration-fast),
+              transform var(--duration-fast);
+}
+.nav-dock__btn > svg { width: 20px; height: 20px; flex-shrink: 0; }
+.nav-dock__caret {
+  width: 12px !important;
+  height: 12px !important;
+  margin-top: -1px;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.nav-dock__btn.is-open .nav-dock__caret { transform: rotate(180deg); }
+.nav-dock__btn:hover { background: var(--color-orange-soft); color: var(--color-orange-ink); }
+.nav-dock__btn:active { transform: scale(0.94); }
+.nav-dock__btn.is-active { background: var(--color-navy); color: var(--color-white); }
+.nav-dock__btn:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+/* Dropdown "Categorias": abre à ESQUERDA do dock (que está colado à direita). */
+.nav-dock__menu {
+  position: absolute;
+  top: 0;
+  right: calc(100% + var(--space-2));
+  min-width: 172px;
+  /* Em telas baixas (landscape/celular curto) as 8 opções não cabem a partir
+     do centro vertical: limita a altura e rola dentro do menu (não vaza a tela
+     nem colide com o WhatsApp flutuante). */
+  max-height: min(62vh, 380px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  animation: dock-menu-in var(--duration-fast) var(--ease-out) both;
+}
+.nav-dock__menu[hidden] { display: none; }
+.nav-dock__opt {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.nav-dock__opt:hover { background: var(--color-orange-soft); color: var(--color-orange-ink); }
+.nav-dock__opt:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 1px;
+}
+
+@keyframes dock-in {
+  from { opacity: 0; transform: translateY(-50%) translateX(18px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+@keyframes dock-menu-in {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-dock { animation: none; }
+  .nav-dock__btn, .nav-dock__caret, .nav-dock__opt { transition: none; }
+  .nav-dock__menu { animation: none; }
+}
+/* MOBILE: desliga o backdrop-filter do dock (re-blur por frame sobre o vídeo em
+   scrub é caro em GPU móvel — mesmo motivo já aplicado em .eyebrow--hero/.btn--glass).
+   Troca por fundo sólido translúcido: estética praticamente idêntica no celular. */
+@media (max-width: 760px) {
+  .nav-dock {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.97);
+  }
+}
+
+/* ---------- TAG "FASE 2" (placeholder do @ real do Instagram) ---------- */
+.instagram__cta-tag {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}

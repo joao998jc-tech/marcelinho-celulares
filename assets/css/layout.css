@@ -1,0 +1,596 @@
+/* =========================================================
+   LAYOUT — MARCELINHO
+   Estrutura macro de cada seção: header, hero, categorias,
+   catálogo, acessórios, serviços/contato, footer.
+   Mobile-first: estilos base = mobile; breakpoints ampliam.
+   ========================================================= */
+
+/* ---------- HEADER ---------- */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-base) var(--ease-out),
+              background var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+
+.site-header.is-scrolled {
+  border-bottom-color: var(--color-border-soft);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+/* MOBILE: desliga o backdrop-filter do header (faixa full-width = o re-blur por
+   frame mais caro sobre o vídeo em scrub). Fundo sólido translúcido no lugar —
+   mesmo padrão já usado em .eyebrow--hero/.btn--glass. Protege INP no celular. */
+@media (max-width: 760px) {
+  .site-header {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.96);
+  }
+  .site-header.is-scrolled {
+    background: #ffffff;
+  }
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+/* Cabeçalho minimalista: só a logo, centralizada (espelha o Erick Garcia,
+   Regra 80). A navegação vive no dock flutuante à direita. */
+.header__inner--centered {
+  justify-content: center;
+}
+
+/* ---------- ABAS SPA (.view) ----------
+   Navegação in-page: só uma .view fica ativa por vez (nav.js). As abas
+   inativas saem do fluxo (display:none). Espelha o padrão do Erick Garcia. */
+.view {
+  display: none;
+}
+.view.is-active {
+  display: block;
+  animation: view-in var(--duration-base) var(--ease-out) both;
+}
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .view.is-active { animation: none; }
+}
+
+/* ---------- HERO — ILHA ESCURA (shader WebGL2) ----------
+   Fullscreen navy-deep com nebulosa animada + partículas atrás,
+   texto à esquerda sobre scrim de AA. O <canvas> é desenhado por
+   hero-shader.js; se WebGL2 faltar / reduced-motion, o gradiente
+   de marca abaixo (background) já entrega um fundo estático elegante
+   (fallback gracioso, e também protege o 1º paint/LCP). */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: 72px;
+  color: var(--hero-text);
+  /* Fundo estático de marca (fallback + base sob o canvas):
+     nebulosa navy fixa, NUNCA preto, laranja só como brilho pontual. */
+  background:
+    radial-gradient(1200px 720px at 82% 12%, rgba(242, 106, 27, 0.16) 0%, transparent 52%),
+    radial-gradient(1000px 760px at 8% 90%, rgba(22, 58, 107, 0.55) 0%, transparent 60%),
+    linear-gradient(160deg, var(--hero-bg) 0%, var(--hero-bg-strong) 55%, var(--hero-bg) 100%);
+}
+
+/* Canvas do shader: preenche o hero, atrás de tudo. */
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  /* Rede de segurança "nunca preto": o backing opaco (alpha:false) nasce preto
+     e o arredondamento do backing pode deixar ~1px de borda sem pintar. Este
+     fundo navy garante que qualquer pixel não desenhado fique na cor de marca. */
+  background: var(--color-navy-deep);
+}
+/* Fallback: sem canvas 2D / reduced-motion (classe adicionada por
+   hero-shader.js) esconde o canvas e mantém só o gradiente de marca do .hero. */
+.hero--static .hero__canvas { display: none; }
+
+/* Scrim navy atrás do bloco de texto — pré-requisito de AA sobre
+   fundo animado. Mais forte à esquerda (onde fica o texto), some à direita. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-strong) 45%, var(--hero-scrim-soft) 85%),
+    linear-gradient(0deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-soft) 45%);
+}
+
+/* Rampa de saída fria: nos últimos px o hero escurece/funde para o
+   corpo claro, evitando corte seco escuro->claro. */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(11, 31, 61, 0.35) 55%, var(--color-bg) 100%);
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: center;
+  padding-block: var(--space-16) var(--space-24);
+  min-height: calc(100svh - 72px);
+}
+
+.hero__copy {
+  max-width: 40rem;
+}
+
+.hero__eyebrow {
+  margin-bottom: var(--space-4);
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-hero);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-6);
+  color: var(--hero-text);
+  /* Sombra sutil: garante leitura da headline mesmo onde o scrim já é
+     translúcido (pior caso: trecho sobre o ápice mais claro da nebulosa). */
+  text-shadow: 0 1px 20px rgba(11, 31, 61, 0.45);
+}
+
+/* Gradiente de texto SÓ na 2ª linha/palavra-chave: branco -> navy-tint
+   -> laranja (laranja só no fim = faísca). Fallback laranja sólido (AA
+   ~5.4:1 sobre navy-deep) quando background-clip:text não existir. */
+.hero__title--accent {
+  color: var(--color-orange);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__title--accent {
+    background-image: linear-gradient(
+      100deg,
+      var(--hero-title-from) 0%,
+      var(--hero-title-mid) 42%,
+      var(--hero-title-to) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.hero__subtitle {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-lg);
+  color: var(--hero-text-soft);
+  max-width: 46ch;
+  margin-bottom: var(--space-8);
+  text-shadow: 0 1px 16px rgba(11, 31, 61, 0.4);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.hero__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+}
+
+.hero__trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--hero-text-soft);
+}
+
+.hero__trust svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-orange);
+  flex-shrink: 0;
+}
+
+@media (min-width: 900px) {
+  .hero__inner {
+    grid-template-columns: minmax(0, 0.62fr) minmax(0, 0.38fr);
+    gap: var(--space-16);
+  }
+}
+
+/* =========================================================
+   INTRO CINEMATOGRÁFICA (abertura na MESMA página)
+   Ligada por hero-iphone-3d.js (body.is-intro). Fundo navy de marca
+   (tokens, nunca preto); mascote dominante; celular 3D em canvas fixo.
+   Nasce display:none -> sem JS a intro não aparece e o site fica normal
+   (fallback por omissão). O celular 3D migrou p/ cá (era .hero__phone).
+   ========================================================= */
+.intro { display: none; }
+
+/* Enquanto a intro roda, o site segue no DOM (scripts dependem dele) mas
+   fica oculto até o usuário concluir a abertura. */
+body.is-intro { overscroll-behavior: none; }
+body.is-intro .site-header,
+body.is-intro #top,
+body.is-intro .site-footer,
+body.is-intro .nav-dock,
+body.is-intro .float-whatsapp { display: none !important; }
+
+body.is-intro .intro {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  /* fundo navy de marca + brilhos de acento (mesma receita do .hero) */
+  background:
+    radial-gradient(1100px 700px at 78% 14%, rgba(242, 106, 27, 0.16) 0%, transparent 52%),
+    radial-gradient(900px 720px at 12% 88%, rgba(22, 58, 107, 0.55) 0%, transparent 60%),
+    linear-gradient(160deg, var(--hero-bg) 0%, var(--hero-bg-strong) 55%, var(--hero-bg) 100%);
+  /* não captura toque: passa p/ o documento (scroll conduz a jornada);
+     CTA e skip recapturam com pointer-events:auto. */
+  pointer-events: none;
+}
+
+.intro__stage { position: absolute; inset: 0; }
+
+/* Palco do celular 3D: canvas cobrindo o viewport, sem capturar toque. */
+.intro__phone { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.intro__phone canvas { width: 100%; height: 100%; display: block; }
+
+/* Mascote DOMINANTE (primeiro elemento percebido). Mobile: ~toda a altura
+   útil; desktop: ~área central. Micro-animações via CSS (transform-only). */
+.intro__mascote {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 88svh;
+  max-width: 96vw;
+  z-index: 1;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+  transition: opacity 380ms var(--ease-out);
+  animation: introBreathe 6s ease-in-out infinite,
+             introSway 9s ease-in-out infinite;
+}
+.intro__mascote-img {
+  display: block;
+  height: 100%;
+  width: auto;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.45));
+}
+/* No zoom-in de entrada o mascote/fundo saem e o celular "engole" a tela. */
+.intro.is-entering .intro__mascote { opacity: 0; }
+
+/* Overlay de olhos p/ piscada (sprite-window do próprio PNG). DESLIGADO
+   por padrão (JS INTRO_BLINK=false); coordenadas aproximadas — o Atlas
+   ajusta ao ligar (cláusula de honestidade 4.3). */
+.intro__eyes {
+  position: absolute;
+  left: 46.4%;
+  top: 21%;
+  width: 26.4%;
+  height: 14%;
+  background: url("../img/mascote-hero.png") no-repeat;
+  background-size: 378.8% 714.3%;
+  background-position: 62% 27%;
+  transform-origin: top center;
+  opacity: 0;
+  pointer-events: none;
+}
+.intro__eyes.is-blinking { opacity: 1; animation: introBlink 130ms ease-in-out; }
+
+/* CTA de entrada — aparece (fade + translate) ao chegar ao centro. */
+.intro__cta {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(24px, 6vh, 64px);
+  z-index: 3;
+  transform: translate(-50%, 18px);
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity 480ms var(--ease-out), transform 480ms var(--ease-out);
+}
+.intro__cta.is-visible { opacity: 1; transform: translate(-50%, 0); }
+.intro.is-entering .intro__cta { opacity: 0; }
+
+/* Skip acessível: invisível até o foco de teclado (o site nunca fica
+   inacessível durante a abertura). */
+.intro__skip {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  z-index: 4;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font: 600 var(--fs-sm) / 1 var(--font-sans);
+  opacity: 0;
+  pointer-events: none;
+}
+.intro__skip:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+/* Trilho de rolagem: só ocupa altura no modo jornada (dá o scroll que
+   conduz a viagem reversível do celular). */
+.intro-spacer { display: none; }
+body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
+
+@media (min-width: 900px) {
+  .intro__mascote { height: 92svh; max-width: 62vw; }
+}
+
+/* ---------- ÁREA DE INSTAGRAM (seção CLARA) ----------
+   Substitui a antiga "Quem é o MARCELINHO" (removida com o mascote). É o
+   ponto onde o vídeo de fundo scroll-scrubbed TERMINA (celular aberto no
+   Instagram). Texto à esquerda (chamada p/ o Instagram da loja); à direita,
+   um "palco" reservado onde o celular do vídeo pousa (fica vazio de propósito,
+   com um enquadramento sutil — o vídeo de fundo ocupa esse espaço).
+   Altura generosa para o vídeo caber e o scrub terminar com folga. */
+.instagram {
+  background: var(--color-bg);
+  padding-block: var(--space-24);
+}
+.instagram__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: center;
+}
+.instagram__copy { order: 2; }
+.instagram__stage { order: 1; }
+.instagram__lead {
+  font-size: var(--fs-lg);
+  color: var(--color-text-secondary);
+  max-width: 48ch;
+  margin-bottom: var(--space-6);
+}
+.instagram__cta { margin-bottom: var(--space-4); }
+.instagram__note {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.instagram__note em { font-style: italic; }
+
+/* Palco do celular 3D: espaçador INVISÍVEL (pedido 2026-08-02 removeu o
+   quadrado tracejado). Mantém só a altura — reserva o ar do pouso e serve
+   de âncora medida do keyframe em hero-iphone-3d.js (computeAnchors). */
+.instagram__stage {
+  min-height: 60svh;
+}
+
+@media (min-width: 900px) {
+  .instagram__inner {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--space-16);
+  }
+  /* Texto à esquerda; palco (onde o vídeo à DIREITA termina) à direita. */
+  .instagram__copy { order: 1; }
+  .instagram__stage { order: 2; min-height: 72svh; }
+}
+
+/* ---------- SEÇÕES GENÉRICAS ---------- */
+.categorias,
+.catalogo,
+.acessorios,
+.servicos,
+.contato {
+  padding-block: var(--space-24);
+}
+
+.catalogo { background: var(--color-bg-elevated); }
+.acessorios { background: var(--color-bg); }
+
+/* ---------- CATEGORIAS (cards de atalho) ---------- */
+.categorias-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 760px) {
+  .categorias-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- CATÁLOGO ---------- */
+.vitrine-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .vitrine-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1040px) {
+  .vitrine-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- ACESSÓRIOS ---------- */
+.acessorios-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 760px) {
+  .acessorios-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- SERVIÇOS + CONTATO (faixa navy) ---------- */
+.servicos {
+  background:
+    radial-gradient(800px 500px at 90% 0%, rgba(242, 106, 27, 0.16) 0%, transparent 55%),
+    var(--color-navy-deep);
+  color: #eaf1fb;
+}
+
+.servicos .section-title { color: #ffffff; }
+.servicos .section-lead { color: #b9c8de; }
+
+.servicos-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+  margin-bottom: var(--space-16);
+}
+
+@media (min-width: 620px) {
+  .servicos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1040px) {
+  .servicos-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Bloco de orçamento: formulário + resumo lado a lado */
+.orcamento {
+  display: grid;
+  gap: var(--space-12);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .orcamento {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+  }
+}
+
+/* ---------- FOOTER ---------- */
+.site-footer {
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: var(--space-16);
+}
+
+.footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding-bottom: var(--space-16);
+}
+
+.footer__brand {
+  max-width: 34ch;
+}
+
+.footer__tagline {
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+}
+
+.footer__nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-8);
+}
+
+.footer__heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-base);
+  margin-bottom: var(--space-4);
+}
+
+.footer__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+}
+
+/* Área de toque dos links do rodapé em mobile/tablet (<900px) */
+@media (max-width: 899px) {
+  .footer__col a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    margin-block: calc(var(--space-2) * -1);
+  }
+}
+
+.footer__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--color-border-soft);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+
+@media (min-width: 760px) {
+  .footer__inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .footer__nav {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-16);
+  }
+  .footer__bottom {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

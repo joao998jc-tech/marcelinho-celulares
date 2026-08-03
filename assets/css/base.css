@@ -1,0 +1,108 @@
+/* =========================================================
+   ESTILOS BASE — MARCELINHO
+   Tipografia global, cores de fundo, container, seleção,
+   e os "átomos" de texto reutilizáveis (eyebrow, títulos).
+   ========================================================= */
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-base);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-orange);
+  color: #fff;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* ---------- EYEBROW (rótulo de seção) ---------- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-orange-ink);
+  margin-bottom: var(--space-4);
+}
+
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 26px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-orange);
+}
+
+/* Variante do eyebrow para uso sobre a faixa navy escura */
+.eyebrow--on-navy {
+  color: var(--color-orange);
+}
+
+/* Variante para o HERO escuro (shader): texto branco (AA ~16:1 sobre
+   navy-deep) com traço laranja de marca — funciona como "badge de
+   confiança". Fundo translúcido dá leitura mesmo sobre a nebulosa. */
+.eyebrow--hero {
+  color: var(--hero-text-soft);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--hero-glass-bg);
+  border: 1px solid var(--hero-glass-border);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+/* Mobile: troca o blur (re-processado por frame sobre o canvas animado) por
+   fundo sólido translúcido — mesmo visual, sem custo contínuo de paint (INP). */
+@media (max-width: 760px) {
+  .eyebrow--hero {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(11, 31, 61, 0.55);
+  }
+}
+
+/* ---------- TÍTULOS / TEXTOS DE SEÇÃO ---------- */
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+  max-width: 20ch;
+  margin-bottom: var(--space-4);
+}
+
+.section-lead {
+  font-size: var(--fs-lg);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  max-width: 58ch;
+  margin-bottom: var(--space-12);
+}
+
+.section-head {
+  margin-bottom: var(--space-12);
+}
+
+.text-orange { color: var(--color-orange-ink); }
+.text-navy { color: var(--color-navy); }
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}

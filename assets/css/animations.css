@@ -1,0 +1,106 @@
+/* =========================================================
+   ANIMAÇÕES — MARCELINHO
+   1) Scroll reveal (via IntersectionObserver em scroll-reveal.js).
+   2) Micro-flutuação do mascote (fallback estático) — sutil.
+   3) Sprite sheet do mascote "acenando" via steps() — PRONTO,
+      porém COMENTADO até o asset do sprite chegar.
+   Tudo respeita prefers-reduced-motion.
+   ========================================================= */
+
+/* ---------- SCROLL REVEAL ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delays escalonados (efeito cascata discreto no hero) */
+.reveal--delay-1 { transition-delay: 0.06s; }
+.reveal--delay-2 { transition-delay: 0.14s; }
+.reveal--delay-3 { transition-delay: 0.22s; }
+.reveal--delay-4 { transition-delay: 0.30s; }
+.reveal--delay-5 { transition-delay: 0.38s; }
+
+/* =========================================================
+   INTRO: MASCOTE "VIVO" (micro-animações transform-only)
+   ---------------------------------------------------------
+   Respiração muito sutil (escala + sobe/desce) + leve sway do
+   corpo/cabeça, em fases diferentes p/ não ficar robótico. Só
+   transform (sem reflow/CLS). A piscada (introBlink) age no
+   overlay .intro__eyes e nasce DESLIGADA (JS INTRO_BLINK=false).
+   ========================================================= */
+@keyframes introBreathe {
+  0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+  50%      { transform: translateX(-50%) translateY(-0.6%) scale(1.012); }
+}
+@keyframes introSway {
+  0%, 100% { rotate: -0.5deg; }
+  50%      { rotate: 0.5deg; }
+}
+@keyframes introBlink {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.12); }
+}
+/* Fade suave do site ao concluir a intro (sem trocar de página). */
+@keyframes introReveal {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+body.intro-done { animation: introReveal 460ms var(--ease-out) both; }
+
+/* =========================================================
+   HERO ESCURO: ENTRADA (roda no LOAD, independente de JS/scroll)
+   ---------------------------------------------------------
+   Badge desce (fade-in-down); headline/subtítulo/CTAs/trust sobem
+   (fade-in-up) escalonados. Puro CSS: se o JS do shader falhar, o
+   conteúdo aparece igual (LCP protegido). Reduced-motion desliga
+   tudo (conteúdo visível de imediato). Só transform/opacity → sem CLS.
+   ========================================================= */
+@keyframes heroInDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroInUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Título (provável LCP): anima SÓ transform, mantendo opacity:1 — assim o
+   navegador conta o elemento como pintado desde o 1º frame (não adia o LCP). */
+@keyframes heroInUpTitle {
+  from { transform: translateY(22px); }
+  to   { transform: translateY(0); }
+}
+.hero__eyebrow  { animation: heroInDown 0.55s var(--ease-out) both; }
+.hero__title    { animation: heroInUpTitle 0.7s 0.06s var(--ease-out) both; }
+.hero__subtitle { animation: heroInUp 0.7s 0.16s var(--ease-out) both; }
+.hero__actions  { animation: heroInUp 0.7s 0.26s var(--ease-out) both; }
+.hero__trust    { animation: heroInUp 0.7s 0.36s var(--ease-out) both; }
+
+/* ---------- REDUÇÃO DE MOVIMENTO ----------
+   Quem pede menos movimento vê o mascote PARADO (frame estático),
+   os reveals já visíveis e nada de flutuação/aceno. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  /* Intro estática: mascote parado (sem respiração/sway/reveal). O JS
+     também não engata a jornada nem importa o three em reduced-motion. */
+  .intro__mascote { animation: none; transform: translateX(-50%); }
+  body.intro-done { animation: none; }
+  /* Hero escuro: sem entrada animada (conteúdo já visível). O shader
+     WebGL2 também não roda em reduced-motion (tratado em hero-shader.js:
+     fica só o fundo estático de marca). */
+  .hero__eyebrow,
+  .hero__title,
+  .hero__subtitle,
+  .hero__actions,
+  .hero__trust {
+    animation: none;
+  }
+}
