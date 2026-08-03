@@ -34,17 +34,27 @@
    transform (sem reflow/CLS). A piscada (introBlink) age no
    overlay .intro__eyes e nasce DESLIGADA (JS INTRO_BLINK=false).
    ========================================================= */
+/* AJUSTE 3 — respiração levemente mais profunda (personagem vivo, não rígido);
+   transform-only sobre o conjunto: NENHUM traço do rosto é alterado. */
 @keyframes introBreathe {
   0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-  50%      { transform: translateX(-50%) translateY(-0.6%) scale(1.012); }
+  50%      { transform: translateX(-50%) translateY(-1.05%) scale(1.018); }
 }
+/* AJUSTE 3 — micro-movimento de cabeça (leve tilt do conjunto), levemente mais
+   perceptível porém discreto; fase própria (9s) desalinhada da respiração (6s)
+   p/ não ficar robótico. */
 @keyframes introSway {
-  0%, 100% { rotate: -0.5deg; }
-  50%      { rotate: 0.5deg; }
+  0%, 100% { rotate: -0.75deg; }
+  50%      { rotate: 0.75deg; }
 }
+/* AJUSTE 3 — piscada natural: pálpebra varre de cima p/ baixo (transform-origin
+   top center no .intro__eyes) e reabre, com fechamento rápido + micro-hold,
+   menos "espremido" que a versão simétrica. Nasce DESLIGADA (JS INTRO_BLINK). */
 @keyframes introBlink {
-  0%, 100% { transform: scaleY(1); }
-  50%      { transform: scaleY(0.12); }
+  0%   { transform: scaleY(1); }
+  45%  { transform: scaleY(0.06); }
+  60%  { transform: scaleY(0.06); }
+  100% { transform: scaleY(1); }
 }
 /* Fade suave do site ao concluir a intro (sem trocar de página). */
 @keyframes introReveal {

@@ -57,6 +57,9 @@
   if (!intro || !stage || !cta) return;
 
   var INTRO_BLINK = false; // ver cabeçalho (cláusula de honestidade 4.3)
+  // AJUSTE 5 — tela LIMPA (sem interface). false = tela premium apagada;
+  // true reverte o conteúdo (mock IG + print). Ponto único de revert.
+  var SCREEN_CONTENT = false;
 
   var reduceMotion =
     window.matchMedia &&
@@ -497,24 +500,51 @@
       t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO;
       return t;
     }
+    /* AJUSTE 5 — tela LIMPA (premium apagada): sem interface/conteúdo. Gradiente
+       escuro de marca + leve sheen diagonal; o VIDRO/reflexo (mesh glass) e as
+       luzes seguem INTACTOS. Interface personalizada virá depois: pôr
+       SCREEN_CONTENT=true reverte para o mock IG + o print. */
+    function cleanScreenTexture() {
+      var W = 512, H = 1024;
+      var c = document.createElement("canvas");
+      c.width = W; c.height = H;
+      var x = c.getContext("2d");
+      var g = x.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, BRAND_NAVY_STRONG);
+      g.addColorStop(0.5, BRAND_NAVY_DEEP);
+      g.addColorStop(1, "#060f1e");
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      var sh = x.createLinearGradient(0, 0, W, H * 0.55);
+      sh.addColorStop(0, "rgba(255,255,255,0.06)");
+      sh.addColorStop(0.4, "rgba(255,255,255,0)");
+      x.fillStyle = sh; x.fillRect(0, 0, W, H);
+      var t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = MAX_ANISO;
+      return t;
+    }
     var screenGeo = normalizeUVs(
       new THREE.ShapeGeometry(roundedRectShape(PW - 0.055, PH - 0.055, PR - 0.03), 14)
     );
-    var screen = new THREE.Mesh(screenGeo, new THREE.MeshBasicMaterial({ map: screenTexture() }));
+    var screen = new THREE.Mesh(
+      screenGeo,
+      new THREE.MeshBasicMaterial({ map: SCREEN_CONTENT ? screenTexture() : cleanScreenTexture() })
+    );
     screen.position.z = 0.0405;
     phone.add(screen);
 
-    new THREE.TextureLoader().load(
-      "assets/img/instagram-perfil.png",
-      function (tex) {
-        tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = MAX_ANISO;
-        var old = screen.material.map;
-        screen.material.map = tex; screen.material.needsUpdate = true;
-        if (old) old.dispose();
-      },
-      undefined,
-      function () {}
-    );
+    if (SCREEN_CONTENT) {
+      new THREE.TextureLoader().load(
+        "assets/img/instagram-perfil.png",
+        function (tex) {
+          tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = MAX_ANISO;
+          var old = screen.material.map;
+          screen.material.map = tex; screen.material.needsUpdate = true;
+          if (old) old.dispose();
+        },
+        undefined,
+        function () {}
+      );
+    }
 
     var glass = new THREE.Mesh(
       screenGeo.clone(),
@@ -677,10 +707,15 @@
 
   var HAND_SCALE = isMobile ? 0.34 : 0.44;
   var CENTER_SCALE = isMobile ? 0.92 : 1.16;
-  /* AJUSTE 2 — eleva o celular ACIMA da palma no repouso (gap visível de
-     levitação). Em unidades de mundo (y+); some ao chegar ao centro, então
-     NÃO altera a fase centralizada/zoom nem a trajetória. 'a afinar'. */
-  var REST_LIFT = isMobile ? 0.07 : 0.055;
+  /* AJUSTE 1 — eleva o celular ACIMA da palma no repouso (gap visível de
+     levitação; NÃO parece mais apoiado). Em unidades de mundo (y+); some ao
+     chegar ao centro via (1-e), então NÃO altera a fase centralizada/zoom nem
+     a trajetória. Ponto único de calibração. 'a afinar' pelo Atlas. */
+  var REST_LIFT = isMobile ? 0.14 : 0.11;
+  /* AJUSTE 2 — amplitude (rad) do balanço de levitação em z. ~0.05 rad ≈ 2.9°:
+     poucos graus, elegante, ida-e-volta contínuo, SINCRONIZADO com floatY
+     (mesma fase). Zera na entrada/zoom (rig.rotation.z -> 0). 'a afinar'. */
+  var ROT_AMP = 0.05;
   /* AJUSTE 3 — escala do CTA projetado na tela, relativa à meia-largura útil
      do display em px (CTA_HALF_W). A razão botão/display depende SÓ destes
      fatores (o halfW se cancela). Calibrado p/ o botão caber DENTRO da tela
@@ -709,7 +744,7 @@
     if (!running) return;
     var t = (now - t0) / 1000;
     var floatY = Math.sin(t * 1.2) * 0.05;     // sobe/desce contínuo, elegante
-    var floatRz = Math.sin(t * 0.9) * 0.05;    // micro-rotação
+    var floatRz = Math.sin(t * 1.2) * ROT_AMP; // AJUSTE 2: balanço de levitação, MESMA fase de floatY (sincronizado)
     var floatRy = Math.sin(t * 0.6) * 0.06;
 
     var tx, ty, ts, try_ = 0.42, trx = 0.03;

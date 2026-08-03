@@ -300,6 +300,12 @@ body.is-intro .intro {
 /* No zoom-in de entrada o mascote/fundo saem e o celular "engole" a tela. */
 .intro.is-entering .intro__mascote { opacity: 0; }
 
+/* AJUSTE 4 — LOGO oficial no topo, SÓ mobile (ativada no @media <900px abaixo).
+   Desktop: oculta. Posição absoluta fora do fluxo do mascote (não empurra/
+   encolhe o personagem). Some junto no zoom de entrada. */
+.intro__logo { display: none; }
+.intro.is-entering .intro__logo { opacity: 0; }
+
 /* Overlay de olhos p/ piscada (sprite-window do próprio PNG). DESLIGADO
    por padrão (JS INTRO_BLINK=false); coordenadas aproximadas — o Atlas
    ajusta ao ligar (cláusula de honestidade 4.3). */
@@ -399,6 +405,27 @@ body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
     width: 100%;
     height: auto;
     max-width: none;
+  }
+  /* AJUSTE 4 — logo visível SÓ no mobile: topo-centro, acima da cabeça, espaço
+     confortável; entrada suave (fade+translate) reusando heroInDown. Glow branco
+     suave dá contraste do wordmark navy sobre o fundo navy, SEM criar caixa. */
+  .intro__logo {
+    display: block;
+    position: absolute;
+    top: var(--intro-logo-top, clamp(14px, 4.5vh, 40px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--intro-logo-w, min(56vw, 260px));
+    height: auto;
+    z-index: 2;
+    opacity: 0.96;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 10px rgba(255, 255, 255, 0.45))
+            drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+    /* backwards (não both): após entrar, a opacity volta ao valor declarado,
+       deixando o fade-out do zoom (.is-entering -> opacity:0) funcionar. */
+    animation: heroInDown 700ms var(--ease-out) backwards;
+    transition: opacity 380ms var(--ease-out);
   }
 }
 
