@@ -712,14 +712,14 @@
      levitação; NÃO parece mais apoiado). Em unidades de mundo (y+); some ao
      chegar ao centro via (1-e), então NÃO altera a fase centralizada/zoom nem
      a trajetória. Ponto único de calibração. 'a afinar' pelo Atlas. */
-  var REST_LIFT = isMobile ? 0.22 : 0.18;
+  var REST_LIFT = isMobile ? 0.44 : 0.38; // rodada 5 (2ª passada): +~25px extra de gap p/ levitação mais evidente (era 0.35/0.30)
   /* AJUSTE 2 — rotação turntable premium (mesmo conceito da bola de basquete,
      replica-v6-FINAL.html:440 `rot.y += .002`): no REPOUSO gira Y contínuo lento
      (objeto vivo em suspensão), sincronizado com o floatY existente; rot.x/z
      fazem easing ao alvo. Ao SAIR do repouso, o ângulo acumulado (spinY) assenta
      no múltiplo de 2π mais próximo (fecha a volta, sem salto) -> no centralizado
      a tela ENCARA a câmera (try_≈0.42, CTA legível). Velocidade 'a afinar'. */
-  var SPIN_SPEED = 0.004;
+  var SPIN_SPEED = 0.009; // rodada 5 (2ª passada): giro turntable um pouco mais evidente (era 0.007), mesmo easing/suavidade
   /* AJUSTE 3 — escala do CTA projetado na tela, relativa à meia-largura útil
      do display em px (CTA_HALF_W). A razão botão/display depende SÓ destes
      fatores (o halfW se cancela). Calibrado p/ o botão caber DENTRO da tela
