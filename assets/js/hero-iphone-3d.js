@@ -187,6 +187,9 @@
      ========================================================= */
   function staticIntro() {
     body.classList.add("intro-static");
+    // AJUSTE 3: sem loop/projeção -> CTA volta ao rodapé (acessível e clicável)
+    cta.classList.remove("is-onscreen");
+    cta.style.left = cta.style.top = cta.style.fontSize = cta.style.padding = cta.style.transform = "";
     lockScroll(true); // sem jornada: não há o que rolar
     phase = "mao";
     showCta();        // entrada sempre acessível
@@ -198,6 +201,7 @@
      MODO JORNADA — carrega three e constrói o aparelho existente
      ========================================================= */
   var renderer, scene, camera, rig, phone, halo, haloMat;
+  var screenAnchor, screenEdge, projA, projB; // AJUSTE 3: projeção do CTA na tela
   var pmrem;
   var MAX_ANISO = 1;
 
@@ -223,6 +227,7 @@
 
     /* jornada liberada: mostra o trilho de scroll e destrava a rolagem */
     body.classList.add("intro-journey");
+    cta.classList.add("is-onscreen"); // AJUSTE 3: CTA passa a viver dentro da tela
     lockScroll(false);
     scheduleBlink();
     window.addEventListener("scroll", syncProgressUI, { passive: true });
@@ -595,6 +600,22 @@
     rig.add(phone);
     scene.add(rig);
 
+    /* AJUSTE 3 — âncoras invisíveis na TELA do aparelho: 'center' = ponto do
+       display onde o CTA fica; 'edge' = borda útil (margem interna), define a
+       escala em px do CTA. Presas ao phone -> giram/flutuam com o aparelho;
+       o CTA (HTML) é projetado sobre elas a cada frame (getWorldPosition+
+       project). z 0.045 = logo à frente do vidro (só posição, sem desenhar). */
+    var CTA_LOCAL_Y = 0.0;  // desloca o CTA no eixo vertical da tela. 'a afinar'
+    var CTA_HALF_W = 0.29;  // meia-largura útil da tela (margem interna). 'a afinar'
+    screenAnchor = new THREE.Object3D();
+    screenAnchor.position.set(0, CTA_LOCAL_Y, 0.045);
+    phone.add(screenAnchor);
+    screenEdge = new THREE.Object3D();
+    screenEdge.position.set(CTA_HALF_W, CTA_LOCAL_Y, 0.045);
+    phone.add(screenEdge);
+    projA = new THREE.Vector3();
+    projB = new THREE.Vector3();
+
     /* HALO de marca atrás do aparelho (acompanha o rig). */
     var sc = document.createElement("canvas");
     sc.width = sc.height = 256;
@@ -656,6 +677,17 @@
 
   var HAND_SCALE = isMobile ? 0.34 : 0.44;
   var CENTER_SCALE = isMobile ? 0.92 : 1.16;
+  /* AJUSTE 2 — eleva o celular ACIMA da palma no repouso (gap visível de
+     levitação). Em unidades de mundo (y+); some ao chegar ao centro, então
+     NÃO altera a fase centralizada/zoom nem a trajetória. 'a afinar'. */
+  var REST_LIFT = isMobile ? 0.07 : 0.055;
+  /* AJUSTE 3 — escala do CTA projetado na tela, relativa à meia-largura útil
+     do display em px (CTA_HALF_W). A razão botão/display depende SÓ destes
+     fatores (o halfW se cancela). Calibrado p/ o botão caber DENTRO da tela
+     com margem lateral visível (~74% da largura interna, não transborda) e o
+     texto seguir legível. 'a afinar' na verificação no Chrome. */
+  var CTA_FIT = { font: 0.19, padY: 0.10, padX: 0.10 };
+  var lastCtaX = 0, lastCtaY = 0;
   function ease(t) { return -(Math.cos(Math.PI * Math.min(Math.max(t, 0), 1)) - 1) / 2; }
 
   function resize() {
@@ -697,7 +729,7 @@
       var sx = lerp(hand.sx, 0.5, e);
       var sy = lerp(hand.sy, 0.5, e);
       var w = fracToWorld(sx, sy);
-      tx = w.x; ty = w.y;
+      tx = w.x; ty = w.y + REST_LIFT * (1 - e); // AJUSTE 2: gap acima da palma no repouso, some ao centro
       ts = lerp(HAND_SCALE, CENTER_SCALE, e);
       try_ = lerp(0.18, 0.42, e);            // vira a tela p/ a câmera ao chegar
       rig.position.z = lerp(0, 0.15, e);     // leve aproximação (profundidade)
@@ -718,8 +750,35 @@
       haloMat.opacity = Math.max(0, 1 - Math.max(0, s - 1.4) * 0.9);
     }
 
+    // AJUSTE 3: enquanto o CTA está visível (fase centralizada) e NÃO no zoom,
+    // gruda-o na tela do aparelho. No zoom (is-entering) ele apenas some (fade).
+    if (screenAnchor && !entering && cta.classList.contains("is-visible")) {
+      updateCtaOnScreen();
+    }
+
     renderer.render(scene, camera);
     raf = window.requestAnimationFrame(tick);
+  }
+
+  /* Projeta as âncoras da tela p/ px e posiciona o CTA sobre o display,
+     dimensionando-o pela meia-largura útil projetada (respeita margem interna
+     e escala responsivo). Só roda com aparelho pronto (modo jornada). */
+  function updateCtaOnScreen() {
+    if (!screenAnchor || cta.hidden) return;
+    var W = stage.clientWidth || window.innerWidth;
+    var H = stage.clientHeight || window.innerHeight;
+    screenAnchor.getWorldPosition(projA).project(camera);
+    screenEdge.getWorldPosition(projB).project(camera);
+    var cx = (projA.x * 0.5 + 0.5) * W;
+    var cy = (-projA.y * 0.5 + 0.5) * H;
+    var ex = (projB.x * 0.5 + 0.5) * W;
+    var halfW = Math.abs(ex - cx) || 1;
+    lastCtaX = cx; lastCtaY = cy;
+    cta.style.left = cx + "px";
+    cta.style.top = cy + "px";
+    cta.style.fontSize = (halfW * CTA_FIT.font) + "px";
+    cta.style.padding = (halfW * CTA_FIT.padY) + "px " + (halfW * CTA_FIT.padX) + "px";
+    cta.style.transform = "translate(-50%, -50%)";
   }
   function play() {
     if (running || !renderer) return;
@@ -752,6 +811,9 @@
       get phoneReady() { return phoneReady; },
       get running() { return running; },
       get ctaVisible() { return !cta.hidden && cta.classList.contains("is-visible"); },
+      /* AJUSTE 3: posição (px) projetada do CTA sobre a tela, p/ verificação */
+      get ctaOnScreen() { return cta.classList.contains("is-onscreen"); },
+      get ctaScreen() { return screenAnchor ? { x: lastCtaX, y: lastCtaY } : null; },
       /* aciona a entrada por código (teste do zoom+reveal) */
       enter: onEnter,
       /* revela direto, sem zoom (teste do estado final) */

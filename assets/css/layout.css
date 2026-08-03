@@ -332,6 +332,20 @@ body.is-intro .intro {
 .intro__cta.is-visible { opacity: 1; transform: translate(-50%, 0); }
 .intro.is-entering .intro__cta { opacity: 0; }
 
+/* AJUSTE 3 — modo "dentro da tela": no modo jornada (há aparelho 3D) o JS
+   projeta o CTA SOBRE o display e o reposiciona a cada frame (left/top/
+   font-size/padding inline), fazendo-o acompanhar o rig enquanto flutua.
+   Sem transição de transform (senão o botão "arrasta" atrás do aparelho);
+   só o fade (opacity) segue animando (entrada e saída no zoom). No fallback
+   sem-WebGL/reduced-motion a classe NÃO é aplicada -> o CTA continua no
+   rodapé (regra acima), acessível e clicável. */
+.intro__cta.is-onscreen {
+  bottom: auto;
+  white-space: nowrap;
+  transition: opacity 480ms var(--ease-out);
+  will-change: left, top;
+}
+
 /* Skip acessível: invisível até o foco de teclado (o site nunca fica
    inacessível durante a abertura). */
 .intro__skip {
@@ -363,6 +377,29 @@ body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
 
 @media (min-width: 900px) {
   .intro__mascote { height: 92svh; max-width: 62vw; }
+}
+
+/* AJUSTE 1 (SÓ mobile <900px; desktop intocado): enquadramento PROPORCIONAL
+   do mascote. A 88svh o mascote fica ~160vw num celular estreito; o
+   `max-width:100%` herdado do reset (reset.css:44-49) capava a LARGURA do
+   .intro__mascote-img abaixo do aspecto natural (880x1040) enquanto a altura
+   seguia 88svh -> esmagamento horizontal. Fix: dirigir por LARGURA (aspecto
+   preservado, sem cortar laterais), altura livre; a fatia de altura fica
+   equilibrada e a âncora da mão (14%/66% do rect) acompanha sozinha.
+   Números "a afinar" no Chrome mobile num ponto só: --mascote-w e
+   --mascote-bottom (largura útil e posição vertical). */
+@media (max-width: 899.98px) {
+  .intro__mascote {
+    height: auto;
+    width: var(--mascote-w, 94vw);
+    max-width: none;
+    bottom: var(--mascote-bottom, 0px);
+  }
+  .intro__mascote-img {
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
 }
 
 /* ---------- ÁREA DE INSTAGRAM (seção CLARA) ----------
