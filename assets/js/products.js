@@ -21,7 +21,7 @@
    ⚠️ O QUE PRECISA SER TROCADO PELO DADO REAL DO CLIENTE
    ---------------------------------------------------------
    1) WHATSAPP_NUMERO  → número oficial do MARCELINHO (só dígitos,
-      com DDI+DDD, ex.: 5515999999999). Hoje = "55SEUNUMERO".
+      com DDI+DDD, ex.: 5515999999999). Hoje = "5515997031149".
    2) PRODUCTS[]       → catálogo real (modelo, marca, condição,
       cor, preço, preço antigo/oferta, armazenamento) + fotos reais
       em assets/img/products/ (trocar o mockup CSS por img real).
@@ -36,7 +36,7 @@
 
   // ---- CONFIG: número de WhatsApp (PLACEHOLDER) --------------------------
   // Formato wa.me: só dígitos, DDI + DDD + número. Ex.: 5515999998888
-  var WHATSAPP_NUMERO = "55SEUNUMERO"; // PLACEHOLDER — trocar pelo número real
+  var WHATSAPP_NUMERO = "5515997031149"; // MARCELINHO — (15) 99703-1149
   window.MARCELINHO_CONFIG = { whatsapp: WHATSAPP_NUMERO };
 
   // ---- DADOS DE EXEMPLO: aparelhos (PLACEHOLDER) -------------------------

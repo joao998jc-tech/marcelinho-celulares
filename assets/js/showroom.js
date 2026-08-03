@@ -101,7 +101,7 @@
       ? '<span class="showroom-info__old">' + formatPrice(product.oldPrice) + "</span>" : "";
     var link = (typeof cfg.whatsappLink === "function")
       ? cfg.whatsappLink(product)
-      : "https://wa.me/" + (cfg.whatsapp || "55SEUNUMERO");
+      : "https://wa.me/" + (cfg.whatsapp || "5515997031149");
     infoBox.innerHTML =
       '<p class="showroom-info__brand">' + product.brandLabel + "</p>" +
       '<h3 class="showroom-info__name">' + modelOf(product) + "</h3>" +
