@@ -79,6 +79,7 @@
   var enterStart = 0;
   var ENTER_MS = 780; // duração do zoom-in de entrada
   var phoneReady = false;
+  var spinY = 0; // AJUSTE 2: ângulo Y acumulado do turntable idle (assenta em 2π ao sair do repouso)
 
   var TRAVEL_END = 0.9;   // progress em que o celular chega ao centro
   var CTA_AT = 0.9;       // progress que revela o CTA
@@ -711,11 +712,14 @@
      levitação; NÃO parece mais apoiado). Em unidades de mundo (y+); some ao
      chegar ao centro via (1-e), então NÃO altera a fase centralizada/zoom nem
      a trajetória. Ponto único de calibração. 'a afinar' pelo Atlas. */
-  var REST_LIFT = isMobile ? 0.14 : 0.11;
-  /* AJUSTE 2 — amplitude (rad) do balanço de levitação em z. ~0.05 rad ≈ 2.9°:
-     poucos graus, elegante, ida-e-volta contínuo, SINCRONIZADO com floatY
-     (mesma fase). Zera na entrada/zoom (rig.rotation.z -> 0). 'a afinar'. */
-  var ROT_AMP = 0.05;
+  var REST_LIFT = isMobile ? 0.22 : 0.18;
+  /* AJUSTE 2 — rotação turntable premium (mesmo conceito da bola de basquete,
+     replica-v6-FINAL.html:440 `rot.y += .002`): no REPOUSO gira Y contínuo lento
+     (objeto vivo em suspensão), sincronizado com o floatY existente; rot.x/z
+     fazem easing ao alvo. Ao SAIR do repouso, o ângulo acumulado (spinY) assenta
+     no múltiplo de 2π mais próximo (fecha a volta, sem salto) -> no centralizado
+     a tela ENCARA a câmera (try_≈0.42, CTA legível). Velocidade 'a afinar'. */
+  var SPIN_SPEED = 0.004;
   /* AJUSTE 3 — escala do CTA projetado na tela, relativa à meia-largura útil
      do display em px (CTA_HALF_W). A razão botão/display depende SÓ destes
      fatores (o halfW se cancela). Calibrado p/ o botão caber DENTRO da tela
@@ -744,8 +748,6 @@
     if (!running) return;
     var t = (now - t0) / 1000;
     var floatY = Math.sin(t * 1.2) * 0.05;     // sobe/desce contínuo, elegante
-    var floatRz = Math.sin(t * 1.2) * ROT_AMP; // AJUSTE 2: balanço de levitação, MESMA fase de floatY (sincronizado)
-    var floatRy = Math.sin(t * 0.6) * 0.06;
 
     var tx, ty, ts, try_ = 0.42, trx = 0.03;
 
@@ -774,9 +776,20 @@
     rig.position.y = lerp(rig.position.y, ty + floatY, 0.12);
     var s = lerp(rig.scale.x, ts, entering ? 0.22 : 0.12);
     rig.scale.setScalar(s);
+    // AJUSTE 2: turntable idle (padrão da bola). No repouso acumula giro Y lento;
+    // ao sair do repouso/zoom, spinY assenta no múltiplo de 2π mais próximo
+    // (fecha a volta sem salto) -> alvo vira try_ puro e a tela encara a câmera.
+    var atRest = !entering && getProgress() < 0.05;
+    if (atRest) {
+      spinY += SPIN_SPEED;
+    } else {
+      var TWO_PI = Math.PI * 2;
+      spinY = lerp(spinY, Math.round(spinY / TWO_PI) * TWO_PI, 0.08);
+    }
+
     rig.rotation.x = lerp(rig.rotation.x, trx, 0.1);
-    rig.rotation.y = lerp(rig.rotation.y, try_ + floatRy, 0.1);
-    rig.rotation.z = lerp(rig.rotation.z, entering ? 0 : floatRz, 0.1);
+    rig.rotation.y = lerp(rig.rotation.y, try_ + spinY, 0.1);
+    rig.rotation.z = lerp(rig.rotation.z, 0, 0.1);
 
     if (halo) {
       halo.position.x = rig.position.x;
@@ -857,6 +870,14 @@
         return rig
           ? { x: rig.position.x, y: rig.position.y, z: rig.position.z, s: rig.scale.x }
           : null;
+      },
+      /* AJUSTE 2: giro turntable acumulado + ângulo Y normalizado [0,2π) p/ o
+         Atlas conferir screen-forward no centralizado (deve ~= 0.42 rad). */
+      get spinY() { return spinY; },
+      get rotY() {
+        if (!rig) return null;
+        var TWO_PI = Math.PI * 2;
+        return ((rig.rotation.y % TWO_PI) + TWO_PI) % TWO_PI;
       }
     };
   }
