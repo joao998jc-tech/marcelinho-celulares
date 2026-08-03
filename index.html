@@ -7,6 +7,57 @@
   <title>MARCELINHO — Celulares Novos e Seminovos</title>
   <meta name="description" content="MARCELINHO: iPhones e smartphones novos e seminovos, com procedência, garantia e atendimento direto pelo WhatsApp." />
 
+  <!-- ===================== PRODUÇÃO · DOMÍNIO OFICIAL =====================
+       Domínio de produção: https://lojamarcelinho.com (apex). O subdomínio
+       www.lojamarcelinho.com faz 301 -> apex via GitHub Pages (config no
+       CNAME + DNS; ver DEPLOY.md). Toda URL absoluta abaixo usa o apex para
+       evitar conteúdo duplicado. Editar SÓ o <head>: a Hero (V1.0, Regra 96)
+       vive no <body> e não é tocada. -->
+  <link rel="canonical" href="https://lojamarcelinho.com/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="color-scheme" content="light" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- Favicon / ícones (usa a logo oficial; trocar por favicon.ico/PNG
+       dedicado 512x512 num passo futuro se desejado) -->
+  <link rel="icon" href="assets/img/logo-marcelinho.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/img/logo-marcelinho.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MARCELINHO" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://lojamarcelinho.com/" />
+  <meta property="og:title" content="MARCELINHO — Celulares Novos e Seminovos" />
+  <meta property="og:description" content="iPhones e smartphones novos e seminovos, com procedência, garantia e atendimento direto pelo WhatsApp." />
+  <!-- PLACEHOLDER: substituir por um social card dedicado 1200x630 quando houver. -->
+  <meta property="og:image" content="https://lojamarcelinho.com/assets/img/mascote-hero.png" />
+  <meta property="og:image:alt" content="Marcelinho apresentando um celular" />
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MARCELINHO — Celulares Novos e Seminovos" />
+  <meta name="twitter:description" content="iPhones e smartphones novos e seminovos, com procedência, garantia e atendimento direto pelo WhatsApp." />
+  <meta name="twitter:image" content="https://lojamarcelinho.com/assets/img/mascote-hero.png" />
+
+  <!-- Dados estruturados (Schema.org · Store). Telefone/endereço/redes reais
+       entram na Fase 2 (hoje placeholder no rodapé); omitidos aqui para não
+       publicar dado falso em structured data. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "MARCELINHO",
+    "url": "https://lojamarcelinho.com/",
+    "image": "https://lojamarcelinho.com/assets/img/mascote-hero.png",
+    "description": "Celulares novos e seminovos com procedência, garantia e atendimento direto pelo WhatsApp.",
+    "areaServed": "Sarapuí, SP",
+    "priceRange": "$$"
+  }
+  </script>
+
   <!-- LCP do hero = a headline (texto), renderizada por HTML/CSS sem depender
        do shader nem de imagem. O mascote agora vive na seção "sobre" (abaixo
        da dobra), então NÃO é mais preload — carrega lazy. -->
