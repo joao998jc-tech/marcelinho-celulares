@@ -1,0 +1,13 @@
+{
+  "name": "marcelinho-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site do Marcelinho (estático). Ferramental APENAS de desenvolvimento local (hot reload). Não afeta a produção servida no GitHub Pages.",
+  "scripts": {
+    "dev": "browser-sync start --server --port 8099 --no-open --no-notify --files \"index.html\" \"assets/**/*.css\" \"assets/**/*.js\" \"assets/**/*.{png,jpg,jpeg,svg,webp}\" \"*.webmanifest\"",
+    "serve": "browser-sync start --server --port 8099 --no-open --no-notify"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.3"
+  }
+}
