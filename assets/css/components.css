@@ -249,38 +249,6 @@
   color: var(--color-text-muted);
 }
 
-/* ---------- FILTROS DE CATEGORIA (injetados por products.js) ---------- */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-8);
-}
-.filters .filter {
-  font-family: var(--font-sans);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-full);
-  padding: var(--space-2) var(--space-4);
-  min-height: 40px;
-  cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out),
-              border-color var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out);
-}
-.filters .filter:hover {
-  color: var(--color-navy);
-  border-color: var(--color-orange);
-}
-.filters .filter.is-active {
-  color: #fff;
-  background: var(--color-navy);
-  border-color: var(--color-navy);
-}
-
 /* ---------- BADGES ---------- */
 .badge {
   display: inline-flex;
@@ -308,129 +276,6 @@
   color: #fff;
 }
 
-/* ---------- CARDS: PRODUTO (CATÁLOGO) ---------- */
-.product-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--duration-base) var(--ease-out),
-              border-color var(--duration-base) var(--ease-out),
-              box-shadow var(--duration-base) var(--ease-out);
-}
-.product-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--color-orange);
-  box-shadow: var(--shadow-md);
-}
-
-.product-card__media { position: relative; }
-
-.product-card__badges {
-  position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* PLACEHOLDER de foto do aparelho (não temos fotos reais ainda).
-   Bloco explícito "IMAGEM DE EXEMPLO" com ícone de celular. */
-.photo-placeholder {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  background: linear-gradient(160deg, var(--color-surface-soft), var(--color-navy-tint));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.photo-placeholder__label {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: var(--space-4);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  max-width: 22ch;
-}
-.photo-placeholder__icon {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto var(--space-2);
-  color: var(--color-navy);
-  opacity: 0.5;
-}
-
-/* Foto real do aparelho (substitui .photo-placeholder quando o
-   cliente enviar as fotos). width/height reais evitam CLS. */
-.product-card__img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  background: var(--color-surface-soft);
-}
-
-.product-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  flex: 1;
-}
-.product-card__brand {
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-.product-card__name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--fs-lg);
-  line-height: var(--lh-snug);
-}
-.product-card__meta {
-  font-size: var(--fs-sm);
-  color: var(--color-text-secondary);
-}
-.product-card__price {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  margin-top: var(--space-1);
-}
-.product-card__price-old {
-  font-size: var(--fs-sm);
-  color: var(--color-text-muted);
-  text-decoration: line-through;
-}
-.product-card__price-value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--fs-xl);
-  color: var(--color-orange-ink);
-}
-.product-card__installment {
-  font-size: var(--fs-xs);
-  color: var(--color-text-muted);
-}
-.product-card__actions {
-  margin-top: auto;
-  padding-top: var(--space-3);
-}
-
 /* ---------- CARDS: ACESSÓRIO ---------- */
 .acessorio-card {
   display: flex;
@@ -447,7 +292,6 @@
   transform: translateY(-4px);
   border-color: var(--color-orange);
 }
-.acessorio-card .photo-placeholder { aspect-ratio: 1 / 1; }
 .acessorio-card__body {
   display: flex;
   flex-direction: column;
@@ -637,140 +481,603 @@ textarea.form-control { min-height: 110px; resize: vertical; }
   }
 }
 
-/* ---------- DOCK DE NAVEGAÇÃO FLUTUANTE (navegação única) ----------
-   Espelha o padrão do BARBER SHOP ERICK GARCIA (Regra 80), adaptando só o
-   branding (navy/laranja, tema claro). Fixo no meio-direito do viewport,
-   sempre visível em mobile E desktop: o topo tem só a logo. z-index 85:
-   acima do vídeo de fundo (80), abaixo do header (100) e sem colidir com o
-   WhatsApp flutuante (60, no canto inferior). */
-.nav-dock {
-  position: fixed;
-  top: 50%;
-  right: calc(env(safe-area-inset-right, 0px) + var(--space-2));
-  transform: translateY(-50%);
-  z-index: 85;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
-  animation: dock-in var(--duration-base) var(--ease-out) both;
+/* =========================================================
+   SHOWROOM — vitrine interativa premium (coverflow)
+   ---------------------------------------------------------
+   Seção ESCURA (ilha, como o hero) logo após o hero. Fundo mantém
+   a identidade Marcelinho: navy + luz laranja da marca. A luz
+   ambiente pende p/ a cor do aparelho central via --showroom-accent
+   (setado por showroom.js) — troca só a iluminação, não a cena.
+   Toda a coreografia é transform/opacity/filter em transição (GPU).
+   ========================================================= */
+.showroom {
+  --showroom-accent: var(--color-orange); /* luz ambiente (JS troca por device) */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--space-24);
+  color: var(--hero-text);
+  background:
+    radial-gradient(1100px 680px at 82% 8%, rgba(242, 106, 27, 0.14) 0%, transparent 54%),
+    radial-gradient(900px 700px at 10% 96%, rgba(22, 58, 107, 0.55) 0%, transparent 60%),
+    linear-gradient(175deg, var(--hero-bg) 0%, var(--hero-bg-strong) 55%, var(--hero-bg) 100%);
 }
-.nav-dock__group { position: relative; display: flex; }
-.nav-dock__btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  width: 64px;
-  min-height: 58px;
-  padding: var(--space-2) 4px;
-  border-radius: var(--radius-full);
-  color: var(--color-navy);
-  font-family: var(--font-sans);
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1;
-  text-align: center;
-  transition: background var(--duration-fast), color var(--duration-fast),
-              transform var(--duration-fast);
-}
-.nav-dock__btn > svg { width: 20px; height: 20px; flex-shrink: 0; }
-.nav-dock__caret {
-  width: 12px !important;
-  height: 12px !important;
-  margin-top: -1px;
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-.nav-dock__btn.is-open .nav-dock__caret { transform: rotate(180deg); }
-.nav-dock__btn:hover { background: var(--color-orange-soft); color: var(--color-orange-ink); }
-.nav-dock__btn:active { transform: scale(0.94); }
-.nav-dock__btn.is-active { background: var(--color-navy); color: var(--color-white); }
-.nav-dock__btn:focus-visible {
-  outline: 2px solid var(--color-orange);
-  outline-offset: 2px;
-}
-
-/* Dropdown "Categorias": abre à ESQUERDA do dock (que está colado à direita). */
-.nav-dock__menu {
+/* Glow ambiente que assume a cor do aparelho selecionado (transição suave). */
+.showroom__ambient {
   position: absolute;
-  top: 0;
-  right: calc(100% + var(--space-2));
-  min-width: 172px;
-  /* Em telas baixas (landscape/celular curto) as 8 opções não cabem a partir
-     do centro vertical: limita a altura e rola dentro do menu (não vaza a tela
-     nem colide com o WhatsApp flutuante). */
-  max-height: min(62vh, 380px);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-lg);
-  animation: dock-menu-in var(--duration-fast) var(--ease-out) both;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(760px 520px at 50% 42%,
+    color-mix(in srgb, var(--showroom-accent) 26%, transparent) 0%, transparent 65%);
+  transition: background 640ms var(--ease-out);
 }
-.nav-dock__menu[hidden] { display: none; }
-.nav-dock__opt {
-  display: block;
-  width: 100%;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  text-align: left;
+.showroom__inner { position: relative; z-index: 1; }
+
+.showroom__head { text-align: center; max-width: 44ch; margin: 0 auto var(--space-12); }
+.showroom__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  margin: var(--space-3) 0 var(--space-3);
+}
+.showroom__title span { color: var(--color-orange); }
+.showroom__hint { color: var(--hero-text-soft); font-size: var(--fs-sm); }
+
+/* ---------- Filtro de categorias (segmented control premium) ----------
+   Ponte visual entre a apresentação e a vitrine (fica entre o cabeçalho e o
+   coverflow). Pílula de vidro sobre o navy; o indicador DESLIZA para a opção
+   ativa (data-active no container). 3 opções de largura igual (flex:1) => o
+   indicador vale 1/3 e transla por múltiplos da própria largura. */
+.showroom__filter {
+  position: relative;
+  display: flex;
+  width: min(360px, 100%);
+  margin: 0 auto var(--space-12);
+  padding: 5px;
+  border-radius: var(--radius-full);
+  background: rgba(232, 239, 248, 0.08);
+  border: 1px solid var(--hero-glass-border);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.showroom__filter-ind {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 3);
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-strong) 100%);
+  box-shadow: var(--shadow-orange-glow);
+  transition: transform var(--duration-base) var(--ease-out);
+  z-index: 0;
+}
+.showroom__filter[data-active="novo"] .showroom__filter-ind { transform: translateX(100%); }
+.showroom__filter[data-active="seminovo"] .showroom__filter-ind { transform: translateX(200%); }
+.showroom__filter-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-full);
   font-family: var(--font-sans);
   font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  transition: background var(--duration-fast), color var(--duration-fast);
+  font-weight: 700;
+  color: var(--hero-text-soft);
+  transition: color var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
 }
-.nav-dock__opt:hover { background: var(--color-orange-soft); color: var(--color-orange-ink); }
-.nav-dock__opt:focus-visible {
-  outline: 2px solid var(--color-orange);
-  outline-offset: 1px;
+.showroom__filter-opt.is-active { color: #fff; }
+.showroom__filter-opt:not(.is-active):hover { color: #fff; }
+.showroom__filter-opt:focus-visible { outline: 2px solid var(--color-orange); outline-offset: 3px; }
+
+/* Estado vazio (categoria sem itens) — não quebra o palco. */
+.showroom__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--hero-text-soft);
+  padding: 0 var(--space-8);
 }
 
-@keyframes dock-in {
-  from { opacity: 0; transform: translateY(-50%) translateX(18px); }
-  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
-}
-@keyframes dock-menu-in {
-  from { opacity: 0; transform: translateX(6px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .nav-dock { animation: none; }
-  .nav-dock__btn, .nav-dock__caret, .nav-dock__opt { transition: none; }
-  .nav-dock__menu { animation: none; }
+  .showroom__filter-ind { transition: none; }
 }
-/* MOBILE: desliga o backdrop-filter do dock (re-blur por frame sobre o vídeo em
-   scrub é caro em GPU móvel — mesmo motivo já aplicado em .eyebrow--hero/.btn--glass).
-   Troca por fundo sólido translúcido: estética praticamente idêntica no celular. */
-@media (max-width: 760px) {
-  .nav-dock {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: rgba(255, 255, 255, 0.97);
-  }
+
+/* ---------- Palco 3D (coverflow) ---------- */
+.showroom__stage {
+  position: relative;
+  height: 420px;
+  perspective: 1400px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.showroom__stage:focus-visible { outline: 2px solid var(--color-orange); outline-offset: 6px; border-radius: var(--radius-lg); }
+.showroom__track {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* O track é um plano em z=0; os cards laterais ficam ATRÁS dele (translateZ
+     negativo). Sem isto, o track (transparente) interceptaria o clique e os
+     aparelhos laterais, embora visíveis, não seriam clicáveis. Os eventos dos
+     cards (pointer-events:auto) ainda sobem por bubbling até o listener aqui. */
+  pointer-events: none;
+}
+
+/* ---------- Card de aparelho (mockup CSS) ---------- */
+.showroom-phone {
+  --hover-sc: 1;
+  --hover-tz: 0px;
+  --device: var(--color-orange);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 190px;
+  height: 380px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  /* Posição/escala ficam no botão (caixa de clique alinhada = alvo grande e
+     confiável); o giro coverflow (--ry) vai no .showroom-phone__body (visual),
+     p/ o hit-test do clique não virar um trapézio fino deslocado do desenho. */
+  transform:
+    translate(-50%, -50%)
+    translateX(var(--tx, 0))
+    translateZ(calc(var(--tz, 0px) + var(--hover-tz)))
+    scale(calc(var(--sc, 1) * var(--hover-sc)));
+  filter: blur(var(--blur-base, 0px));
+  opacity: var(--op, 1);
+  z-index: var(--z, 1);
+  transition:
+    transform 720ms var(--ease-out),
+    filter 520ms var(--ease-out),
+    opacity 520ms var(--ease-out);
+}
+.showroom-phone.is-center { cursor: default; }
+/* Pré-seleção (hover): sobe escala, aproxima a "câmera", tira o blur, mais luz.
+   filter/opacity/z-index estão aqui (não inline) p/ o :hover poder vencê-los. */
+.showroom-phone:not(.is-center):hover,
+.showroom-phone:not(.is-center):focus-visible {
+  --hover-sc: 1.07;
+  --hover-tz: 60px;
+  filter: blur(0px) brightness(1.12);
+  opacity: 1;
+  z-index: 130;
+}
+
+/* Flutuação permanente (objeto premium suspenso) — keyframe em animations.css. */
+.showroom-phone__float {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: showroomFloat 6.5s ease-in-out infinite;
+  will-change: transform;
+}
+/* Fases diferentes por posição p/ não flutuarem em bloco (robótico). */
+.showroom-phone:nth-child(2n) .showroom-phone__float { animation-duration: 7.4s; animation-delay: -1.8s; }
+.showroom-phone:nth-child(3n) .showroom-phone__float { animation-duration: 8.1s; animation-delay: -3.2s; }
+
+.showroom-phone__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  width: 66%;
+  height: 30px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5) 0%, transparent 78%);
+  filter: blur(3px);
+  transition: opacity 520ms var(--ease-out);
+}
+.showroom-phone.is-center .showroom-phone__shadow { width: 74%; height: 36px; }
+
+.showroom-phone__body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  padding: 8px;
+  /* Giro coverflow (visual): transição própria p/ acompanhar a seleção. */
+  transform: rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 720ms var(--ease-out);
+  background: linear-gradient(150deg, #2b3c58 0%, #16233c 46%, #0d1729 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.06),
+    inset 0 2px 3px rgba(255, 255, 255, 0.18),
+    0 26px 50px rgba(0, 0, 0, 0.5);
+}
+.showroom-phone__screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 23px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% 8%,
+      color-mix(in srgb, var(--device) 42%, #0b1220) 0%, #0b1220 60%),
+    linear-gradient(160deg, #16233c 0%, #0b1220 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.showroom-phone__notch {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: #05080f;
+}
+/* Glow interno da cor do aparelho (a "luz" do device). */
+.showroom-phone__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(80% 55% at 50% 30%,
+    color-mix(in srgb, var(--device) 55%, transparent) 0%, transparent 70%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+.showroom-phone__label {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 26px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+}
+/* Reflexo/gloss diagonal na lâmina de vidro. */
+.showroom-phone__gloss {
+  position: absolute;
+  inset: 8px;
+  border-radius: 23px;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 34%);
+  pointer-events: none;
+}
+
+/* ---------- Setas prev/next ---------- */
+.showroom__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 140;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hero-glass-border);
+  border-radius: var(--radius-full);
+  background: var(--hero-glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--hero-text);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              opacity var(--duration-fast) var(--ease-out);
+}
+.showroom__arrow svg { width: 22px; height: 22px; }
+.showroom__arrow:hover { background: rgba(242, 106, 27, 0.32); }
+.showroom__arrow:disabled { opacity: 0.32; cursor: default; }
+.showroom__arrow--prev { left: 4px; }
+.showroom__arrow--next { right: 4px; }
+
+/* ---------- Info dinâmica do aparelho central ---------- */
+.showroom__info {
+  max-width: 420px;
+  margin: var(--space-16) auto 0;
+  text-align: center;
+}
+.showroom__info.is-swapped { animation: showroomInfoSwap 440ms var(--ease-out) both; }
+.showroom-info__brand {
+  font-size: var(--fs-sm);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: var(--space-1);
+}
+.showroom-info__name {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  margin-bottom: var(--space-4);
+}
+.showroom-info__specs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-4);
+}
+.showroom-info__specs li {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--hero-text);
+}
+.showroom-info__specs span {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hero-text-soft);
+  margin-bottom: 1px;
+}
+.showroom-info__price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+.showroom-info__old {
+  color: var(--hero-text-soft);
+  text-decoration: line-through;
+  font-size: var(--fs-base);
+}
+.showroom-info__now {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  color: var(--color-orange);
+}
+.showroom-info__pay {
+  font-size: var(--fs-sm);
+  color: var(--hero-text-soft);
+  margin-bottom: var(--space-6);
+}
+.showroom-info__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 720px) {
+  .showroom__stage { height: 360px; }
+  /* Escala o track inteiro: encolhe cards E o espalhamento juntos no mobile,
+     sem recalcular px em JS (posições estão em coordenadas do track). */
+  .showroom__track { transform: scale(0.66); }
+  .showroom__arrow { width: 40px; height: 40px; }
 }
 
 /* ---------- TAG "FASE 2" (placeholder do @ real do Instagram) ---------- */
-.instagram__cta-tag {
-  display: inline-block;
-  margin-left: var(--space-2);
-  padding: 1px 7px;
+/* =========================================================
+   VITRINE DE ACESSÓRIOS (carrossel horizontal premium)
+   ---------------------------------------------------------
+   Substitui a antiga área de Instagram. Fundo navy CONTÍNUO com o showroom
+   (acima) e a faixa de serviços (abaixo) — o usuário sente um único ambiente.
+   Mesma LINGUAGEM VISUAL dos celulares: movimento (float), gloss, glow — sem
+   copiar o coverflow. Cada card: mockup (Fase 1), nome, preço e "Ver detalhes"
+   (abre modal). Cards/setas/modal injetados por products.js.
+   ========================================================= */
+.acessorios-showcase {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--space-24);
+  color: var(--hero-text);
+  background:
+    radial-gradient(1000px 640px at 18% 6%, rgba(242, 106, 27, 0.12) 0%, transparent 54%),
+    radial-gradient(900px 700px at 92% 96%, rgba(22, 58, 107, 0.5) 0%, transparent 60%),
+    linear-gradient(185deg, var(--hero-bg) 0%, var(--hero-bg-strong) 55%, var(--hero-bg) 100%);
+}
+.acessorios-showcase__ambient {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(680px 460px at 50% 30%, rgba(242, 106, 27, 0.13) 0%, transparent 62%);
+}
+.acessorios-showcase__inner { position: relative; z-index: 1; }
+.acessorios-showcase__head { text-align: center; max-width: 46ch; margin: 0 auto var(--space-12); }
+.acessorios-showcase__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  line-height: var(--lh-tight);
+  margin: var(--space-3) 0;
+}
+.acessorios-showcase__title span { color: var(--color-orange); }
+.acessorios-showcase__hint { color: var(--hero-text-soft); font-size: var(--fs-sm); }
+
+/* ---------- Carrossel ---------- */
+.acessorios-carousel { position: relative; }
+.acessorios-carousel__track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: var(--space-4) 2px var(--space-6);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  outline: none;
+}
+.acessorios-carousel__track::-webkit-scrollbar { display: none; }
+.acessorios-carousel__track.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.acessorios-carousel__track:focus-visible {
+  outline: 2px solid var(--color-orange); outline-offset: 4px; border-radius: var(--radius-lg);
+}
+
+/* ---------- Card de acessório ---------- */
+.acc-card {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: rgba(232, 239, 248, 0.06);
+  border: 1px solid rgba(232, 239, 248, 0.14);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: transform var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out),
+              border-color var(--duration-base);
+  -webkit-user-select: none; user-select: none;
+}
+@media (min-width: 760px) {
+  .acc-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(242, 106, 27, 0.5);
+  }
+}
+.acc-card__media {
+  position: relative;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, rgba(22, 58, 107, 0.55), rgba(11, 31, 61, 0.2));
+  overflow: hidden;
+}
+.acc-card__glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 180px; height: 180px;
+  margin: -90px 0 0 -90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 106, 27, 0.32) 0%, transparent 70%);
+  animation: accFloat 7s ease-in-out infinite;
+  pointer-events: none;
+}
+.acc-card__icon {
+  position: relative;
+  width: 84px; height: 84px;
+  color: #fff;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+  animation: accFloat 6s ease-in-out infinite;
+}
+.acc-card:nth-child(2n) .acc-card__icon { animation-duration: 7.2s; animation-delay: -1.5s; }
+.acc-card:nth-child(3n) .acc-card__icon { animation-duration: 8s; animation-delay: -3s; }
+.acc-card__gloss {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.14) 0%, transparent 42%);
+}
+.acc-card__ph {
+  position: absolute; bottom: 8px; right: 10px;
+  font-size: 0.6rem; letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
+}
+.acc-card__body {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: var(--space-4);
+}
+.acc-card__cat {
+  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--color-orange);
+}
+.acc-card__name {
+  font-family: var(--font-display); font-size: var(--fs-lg);
+  line-height: var(--lh-snug); color: #fff;
+}
+.acc-card__price {
+  font-weight: 700; font-size: var(--fs-lg); color: #fff;
+  margin-bottom: var(--space-3);
+}
+.acc-card__details { margin-top: auto; }
+
+/* ---------- Setas do carrossel ---------- */
+.acessorios-carousel__arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.22);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  vertical-align: middle;
+  background: rgba(11, 31, 61, 0.72);
+  border: 1px solid rgba(232, 239, 248, 0.22);
+  color: #fff;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-md);
+  z-index: 2;
+  transition: background var(--duration-fast), opacity var(--duration-fast);
+}
+.acessorios-carousel__arrow svg { width: 22px; height: 22px; }
+.acessorios-carousel__arrow:hover { background: var(--color-orange); }
+.acessorios-carousel__arrow:disabled { opacity: 0.3; cursor: default; }
+.acessorios-carousel__arrow[hidden] { display: none; }
+.acessorios-carousel__arrow--prev { left: -8px; }
+.acessorios-carousel__arrow--next { right: -8px; }
+@media (max-width: 620px) {
+  /* mobile: navega por arraste/scroll nativo — sem setas */
+  .acessorios-carousel__arrow { display: none; }
+}
+
+/* ---------- Modal "Ver detalhes" ---------- */
+.acc-modal {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-4);
+}
+.acc-modal[hidden] { display: none; }
+.acc-modal__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(6, 16, 33, 0.72);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  animation: accFade var(--duration-fast) ease both;
+}
+.acc-modal__panel {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100svh - 2 * var(--space-4));
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: accPop var(--duration-base) var(--ease-out) both;
+}
+.acc-modal__close {
+  position: absolute; top: 10px; right: 10px;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-primary);
+  z-index: 1;
+}
+.acc-modal__close svg { width: 20px; height: 20px; }
+.acc-modal__close:hover { background: #fff; }
+.acc-modal__close:focus-visible { outline: 2px solid var(--color-orange); outline-offset: 2px; }
+.acc-modal__media {
+  position: relative;
+  height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
+}
+.acc-modal__media .acc-card__media { height: 100%; width: 100%; background: transparent; }
+.acc-modal__media .acc-card__icon { width: 96px; height: 96px; }
+.acc-modal__body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); }
+.acc-modal__cat {
+  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--color-orange-ink);
+}
+.acc-modal__name { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--color-text-primary); }
+.acc-modal__desc { color: var(--color-text-secondary); font-size: var(--fs-base); line-height: var(--lh-normal); }
+.acc-modal__price { font-weight: 700; font-size: var(--fs-xl); color: var(--color-text-primary); margin: var(--space-2) 0 var(--space-3); }
+
+@keyframes accFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes accFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes accPop {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acc-card__glow, .acc-card__icon { animation: none; }
+  .acc-modal__backdrop, .acc-modal__panel { animation: none; }
+  .acc-card { transition: none; }
 }

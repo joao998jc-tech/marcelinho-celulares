@@ -63,6 +63,14 @@
 }
 body.intro-done { animation: introReveal 460ms var(--ease-out) both; }
 
+/* Indicador de scroll da abertura: sugestão sutil de "role" — SÓ transform
+   (GPU), deslocamento vertical de ~7px, lento. A opacity (fade ao rolar) fica
+   com scroll-cue.js (.is-hidden) p/ não brigar com o bob. */
+@keyframes scrollCueBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(7px); }
+}
+
 /* =========================================================
    HERO ESCURO: ENTRADA (roda no LOAD, independente de JS/scroll)
    ---------------------------------------------------------
@@ -91,10 +99,38 @@ body.intro-done { animation: introReveal 460ms var(--ease-out) both; }
 .hero__actions  { animation: heroInUp 0.7s 0.26s var(--ease-out) both; }
 .hero__trust    { animation: heroInUp 0.7s 0.36s var(--ease-out) both; }
 
+/* =========================================================
+   SHOWROOM: micro-flutuação permanente + troca de info
+   ---------------------------------------------------------
+   "Objeto premium suspenso": sobe/desce discreto + pequena rotação
+   contínua, só transform (sem reflow). Aplicada no .showroom-phone__float
+   (elemento INTERNO), separada da transição de posição/seleção do card,
+   p/ as duas não brigarem. Como é keyframe CSS, o browser pausa sozinho
+   quando a aba (ou a .view via display:none) fica oculta — nada conta
+   tempo escondido. Reduced-motion desliga tudo (abaixo).
+   ========================================================= */
+@keyframes showroomFloat {
+  0%, 100% { transform: translateY(0) rotateZ(-0.6deg); }
+  50%      { transform: translateY(-12px) rotateZ(0.6deg); }
+}
+/* Troca de aparelho: a info some/reaparece com leve subida (fade+slide). */
+@keyframes showroomInfoSwap {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ---------- REDUÇÃO DE MOVIMENTO ----------
    Quem pede menos movimento vê o mascote PARADO (frame estático),
    os reveals já visíveis e nada de flutuação/aceno. */
 @media (prefers-reduced-motion: reduce) {
+  /* Showroom: sem flutuação, sem "voo" de seleção e sem fade de troca — a
+     seleção passa a ser um corte instantâneo (acessível), mantendo a
+     hierarquia visual (blur/escala/opacidade continuam, só não animam). */
+  .showroom-phone__float { animation: none; }
+  .showroom-phone,
+  .showroom-phone__body { transition: none; }
+  .showroom__ambient { transition: none; }
+  .showroom__info.is-swapped { animation: none; }
   .reveal {
     opacity: 1;
     transform: none;
@@ -103,6 +139,9 @@ body.intro-done { animation: introReveal 460ms var(--ease-out) both; }
      também não engata a jornada nem importa o three em reduced-motion. */
   .intro__mascote { animation: none; transform: translateX(-50%); }
   body.intro-done { animation: none; }
+  /* Indicador de scroll: sem bob (em reduced-motion a jornada nem engata, mas
+     garante que nenhum deslocamento contínuo escape). */
+  .scroll-cue { animation: none; }
   /* Hero escuro: sem entrada animada (conteúdo já visível). O shader
      WebGL2 também não roda em reduced-motion (tratado em hero-shader.js:
      fica só o fundo estático de marca). */
