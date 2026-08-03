@@ -122,19 +122,11 @@
     linear-gradient(0deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-soft) 45%);
 }
 
-/* Rampa de saída fria: nos últimos px o hero escurece/funde para o
-   corpo claro, evitando corte seco escuro->claro. */
-.hero::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 160px;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(11, 31, 61, 0.35) 55%, var(--color-bg) 100%);
-}
+/* CONTINUIDADE (página única): o hero é seguido pela vitrine (showroom),
+   também navy. A antiga rampa .hero::after fundia p/ o CLARO (--color-bg),
+   criando uma "linha branca" + corte antes da vitrine escura — removida.
+   O fundo do hero termina em navy-deep e encontra o navy-deep do showroom
+   sem costura. */
 
 .hero__inner {
   position: relative;
@@ -250,7 +242,6 @@ body.is-intro { overscroll-behavior: none; }
 body.is-intro .site-header,
 body.is-intro #top,
 body.is-intro .site-footer,
-body.is-intro .nav-dock,
 body.is-intro .float-whatsapp { display: none !important; }
 
 body.is-intro .intro {
@@ -381,6 +372,36 @@ body.is-intro .intro {
 .intro-spacer { display: none; }
 body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
 
+/* =========================================================
+   INDICADOR DE SCROLL DA ABERTURA (overlay NOVO, não é o #intro)
+   ---------------------------------------------------------
+   Fixo no canto inferior ESQUERDO (o centro-baixo é do CTA e o mascote
+   domina o centro). Só existe no modo jornada — no fallback estático o
+   scroll fica travado e o convite "role" seria mentira. Some ao 1º scroll
+   (.is-hidden, fade por opacity) e reaparece ao voltar ao topo. Bob = só
+   transform (GPU). pointer-events:none: nunca intercepta o CTA/skip. */
+.scroll-cue {
+  display: none;
+  position: fixed;
+  left: clamp(16px, 3vw, 40px);
+  bottom: clamp(18px, 4vh, 40px);
+  z-index: 1001; /* logo acima da intro (1000) */
+  font: 500 var(--fs-sm) / 1 var(--font-sans);
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35); /* legibilidade sobre o navy/brilhos */
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  transition: opacity 420ms var(--ease-out);
+  animation: scrollCueBob 2.2s ease-in-out infinite;
+}
+body.is-intro.intro-journey .scroll-cue { display: block; }
+.intro.is-entering ~ .scroll-cue,
+.scroll-cue.is-hidden { opacity: 0; }
+/* Invisível não precisa animar (poupa o compositor). */
+.scroll-cue.is-hidden { animation-play-state: paused; }
+
 @media (min-width: 900px) {
   .intro__mascote { height: 92svh; max-width: 62vw; }
 }
@@ -429,54 +450,10 @@ body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
   }
 }
 
-/* ---------- ÁREA DE INSTAGRAM (seção CLARA) ----------
-   Substitui a antiga "Quem é o MARCELINHO" (removida com o mascote). É o
-   ponto onde o vídeo de fundo scroll-scrubbed TERMINA (celular aberto no
-   Instagram). Texto à esquerda (chamada p/ o Instagram da loja); à direita,
-   um "palco" reservado onde o celular do vídeo pousa (fica vazio de propósito,
-   com um enquadramento sutil — o vídeo de fundo ocupa esse espaço).
-   Altura generosa para o vídeo caber e o scrub terminar com folga. */
-.instagram {
-  background: var(--color-bg);
-  padding-block: var(--space-24);
-}
-.instagram__inner {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-8);
-  align-items: center;
-}
-.instagram__copy { order: 2; }
-.instagram__stage { order: 1; }
-.instagram__lead {
-  font-size: var(--fs-lg);
-  color: var(--color-text-secondary);
-  max-width: 48ch;
-  margin-bottom: var(--space-6);
-}
-.instagram__cta { margin-bottom: var(--space-4); }
-.instagram__note {
-  font-size: var(--fs-sm);
-  color: var(--color-text-muted);
-}
-.instagram__note em { font-style: italic; }
-
-/* Palco do celular 3D: espaçador INVISÍVEL (pedido 2026-08-02 removeu o
-   quadrado tracejado). Mantém só a altura — reserva o ar do pouso e serve
-   de âncora medida do keyframe em hero-iphone-3d.js (computeAnchors). */
-.instagram__stage {
-  min-height: 60svh;
-}
-
-@media (min-width: 900px) {
-  .instagram__inner {
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: var(--space-16);
-  }
-  /* Texto à esquerda; palco (onde o vídeo à DIREITA termina) à direita. */
-  .instagram__copy { order: 1; }
-  .instagram__stage { order: 2; min-height: 72svh; }
-}
+/* ---------- ROLAGEM SUAVE / OFFSET DO HEADER ----------
+   Página única: a logo/rodapé rolam até estas seções (nav.js). O header é
+   sticky; scroll-margin-top evita que o topo da seção fique escondido sob ele. */
+#showroom, #acessorios, #servicos { scroll-margin-top: 76px; }
 
 /* ---------- SEÇÕES GENÉRICAS ---------- */
 .categorias,
@@ -500,25 +477,6 @@ body.is-intro.intro-journey .intro-spacer { display: block; height: 240svh; }
 @media (min-width: 760px) {
   .categorias-grid {
     grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* ---------- CATÁLOGO ---------- */
-.vitrine-grid {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 560px) {
-  .vitrine-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1040px) {
-  .vitrine-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 

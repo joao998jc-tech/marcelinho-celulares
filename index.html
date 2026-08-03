@@ -134,6 +134,13 @@
        do celular (reversível). Removido do DOM quando a intro conclui. -->
   <div class="intro-spacer" aria-hidden="true"></div>
 
+  <!-- Indicador de scroll da abertura: elemento NOVO sobreposto, FORA da Hero
+       congelada (#intro, Regra 96) — não toca mascote/celular/logo/animações.
+       Aparece só no modo jornada (body.is-intro.intro-journey), canto inferior
+       esquerdo; some ao 1º scroll e reaparece ao voltar ao topo. Controlado por
+       assets/js/scroll-cue.js; bob e fade são CSS (transform/opacity). -->
+  <div class="scroll-cue" id="scrollCue" aria-hidden="true">↓ Role para explorar</div>
+
   <!-- ===================== VÍDEO DE FUNDO (scroll-scrubbed) =====================
        Camada FIXA, atrás do conteúdo (z abaixo de menu/header) e sem capturar
        cliques. O quadro exibido é amarrado à posição do scroll por
@@ -157,14 +164,13 @@
   -->
 
   <!-- ===================== HEADER (só a LOGO, centralizada) =====================
-       Espelha o padrão do BARBER SHOP ERICK GARCIA (Regra 80): cabeçalho
-       minimalista com apenas a logo ao centro; TODA a navegação vive no
-       dock flutuante à direita (ver <nav class="nav-dock"> ao final).
-       Removidos: nav de âncoras, botão "Chamar no WhatsApp" do header e o
-       menu mobile (o botão verde flutuante de WhatsApp já cobre o contato). -->
+       Cabeçalho minimalista com apenas a logo ao centro. Página ÚNICA: a
+       descoberta é contínua (apresentação -> filtro -> vitrine de smartphones
+       -> carrossel de acessórios), sem abas nem dock. A logo rola ao topo; os
+       links de seção ficam no rodapé (rolagem suave via nav.js). -->
   <header class="site-header" id="header">
     <div class="container header__inner header__inner--centered">
-      <a href="#bemvindo" class="logo" data-target="bemvindo" aria-label="MARCELINHO — página inicial">
+      <a href="#top" class="logo" aria-label="MARCELINHO — página inicial">
         <!-- Logo oficial (pedido 2026-08-03): wordmark navy do cliente,
              otimizada (recorte + PNG8) a partir de "logo marcelinho.png".
              onerror = fallback p/ o wordmark textual (o span abaixo). -->
@@ -228,48 +234,77 @@
       </div>
     </section>
 
-    <!-- ===================== ÁREA DE INSTAGRAM =====================
-         Substitui a antiga seção "Quem é o MARCELINHO" (removida junto com a
-         imagem do mascote a pedido do João). É AQUI que o vídeo de fundo
-         scroll-scrubbed TERMINA: ao chegar nesta área o celular do vídeo
-         aparece aberto no Instagram. O texto chama o cliente para acompanhar
-         as novidades pelo Instagram da loja. O painel à direita é o "palco"
-         reservado para o celular do vídeo pousar — deixado propositalmente
-         vazio (o vídeo de fundo ocupa esse espaço). -->
-    <section class="instagram" id="instagram">
-      <div class="container instagram__inner">
-        <div class="instagram__copy">
-          <p class="eyebrow reveal">Acompanhe o MARCELINHO</p>
-          <h2 class="section-title reveal">Novidade nova toda semana no nosso Instagram.</h2>
-          <p class="instagram__lead reveal">
-            É no Instagram da loja que saem primeiro os aparelhos que acabaram
-            de chegar, as ofertas relâmpago, os seminovos revisados e os
-            bastidores do atendimento. Siga a gente e não perca nenhuma
-            oportunidade — quando você vê por aqui, já pode chamar no WhatsApp.
-          </p>
-          <!-- PLACEHOLDER FASE 2: @ real do Instagram do MARCELINHO.
-               Enquanto não houver o @ oficial, o link aponta para o topo
-               (href="#bemvindo") e o texto usa @marcelinho como exemplo. -->
-          <a href="#bemvindo" class="btn btn--primary btn--large instagram__cta reveal reveal--delay-1"
-             aria-label="Seguir o MARCELINHO no Instagram (FASE 2: @ real do cliente)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>
-            </svg>
-            Seguir @marcelinho <span class="instagram__cta-tag">FASE 2</span>
-          </a>
-          <p class="instagram__note reveal reveal--delay-1">
-            <!-- PLACEHOLDER FASE 2: trocar @marcelinho pelo @ real da loja. -->
-            @marcelinho — <em>usuário de exemplo; substituir pelo Instagram real do cliente na Fase 2.</em>
+    <!-- ===================== SHOWROOM (vitrine interativa premium) =====================
+         1ª seção após a Hero: coleção de smartphones em coverflow. Aparelho
+         central em destaque; secundários ao redor recuados/desfocados/menor
+         opacidade. Hover pré-seleciona (sobe escala, tira blur, mais luz);
+         clique/toque/seta/swipe traz o escolhido ao centro numa transição
+         CONTÍNUA (o anterior recua p/ secundária). Micro-flutuação permanente.
+         Fundo mantém a identidade Marcelinho (navy + luz laranja da marca);
+         a luz ambiente pende p/ a cor do aparelho selecionado (troca só a
+         iluminação, sem trocar a cena — diferença deliberada ao Motion Sites).
+         Palco + cards + info são injetados por assets/js/showroom.js a partir
+         de PRODUCTS[] (products.js). Sem JS, fica só o cabeçalho. -->
+    <section class="showroom" id="showroom" aria-label="Vitrine interativa de smartphones">
+      <div class="showroom__ambient" aria-hidden="true"></div>
+      <div class="container showroom__inner">
+        <div class="showroom__head">
+          <p class="eyebrow eyebrow--hero reveal">Coleção em destaque</p>
+          <h2 class="showroom__title reveal">
+            Escolha seu próximo aparelho como quem <span>segura ele na mão.</span>
+          </h2>
+          <p class="showroom__hint reveal reveal--delay-1">
+            Toque em um aparelho para trazê-lo ao centro — no celular, arraste para o lado.
           </p>
         </div>
 
-        <!-- Palco do celular 3D: espaçador INVISÍVEL (pedido 2026-08-02:
-             sem o quadrado tracejado). NÃO remover o elemento: ele dá a
-             altura da seção e é a âncora medida do pouso (KF[1].fx em
-             hero-iphone-3d.js/computeAnchors). -->
-        <div class="instagram__stage" aria-hidden="true"></div>
+        <!-- Filtro de categorias (segmented control premium): ponte visual
+             entre a apresentação e a vitrine. Controla o subconjunto de
+             aparelhos do coverflow (Todos/Novos/Seminovos) SEM reload e SEM
+             destruir o componente — showroom.js re-renderiza os cards
+             mantendo as animações. data-active move o indicador deslizante. -->
+        <div class="showroom__filter reveal reveal--delay-1" id="showroomFilter"
+             data-active="todos" role="group" aria-label="Filtrar aparelhos por condição">
+          <span class="showroom__filter-ind" aria-hidden="true"></span>
+          <button type="button" class="showroom__filter-opt is-active" data-cat="todos" aria-pressed="true">Todos</button>
+          <button type="button" class="showroom__filter-opt" data-cat="novo" aria-pressed="false">Novos</button>
+          <button type="button" class="showroom__filter-opt" data-cat="seminovo" aria-pressed="false">Seminovos</button>
+        </div>
+
+        <!-- Palco do coverflow (cards + setas injetados por showroom.js) -->
+        <div class="showroom__stage" id="showroomStage" tabindex="0"
+             role="group" aria-label="Coleção de smartphones — use as setas para navegar"></div>
+        <!-- Info dinâmica do aparelho central (nome, capacidade, cor, estado,
+             preço, condições de pagamento e CTAs). Atualiza a cada seleção. -->
+        <div class="showroom__info" id="showroomInfo" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ===================== VITRINE DE ACESSÓRIOS (showcase) =====================
+         Substitui a antiga área de Instagram. Carrossel horizontal premium com
+         a MESMA linguagem visual do showroom (fundo navy contínuo, movimento e
+         qualidade — sem copiar o coverflow 1:1). Cada acessório: imagem
+         (mockup CSS Fase 1), nome, preço e botão "Ver detalhes" (abre um modal
+         com a descrição). Cards + setas + modal injetados por products.js a
+         partir de ACCESSORIES[] (fonte única, Regra 74). Sem JS, fica só o
+         cabeçalho. id="acessorios" = alvo de rolagem do rodapé. -->
+    <section class="acessorios-showcase" id="acessorios" aria-label="Vitrine de acessórios">
+      <div class="acessorios-showcase__ambient" aria-hidden="true"></div>
+      <div class="container acessorios-showcase__inner">
+        <div class="acessorios-showcase__head">
+          <p class="eyebrow eyebrow--hero reveal">Acessórios da loja</p>
+          <h2 class="acessorios-showcase__title reveal">
+            Complete seu setup com <span>estilo e proteção.</span>
+          </h2>
+          <p class="acessorios-showcase__hint reveal reveal--delay-1">
+            Arraste para o lado para ver tudo — toque em um acessório para ver os detalhes.
+          </p>
+        </div>
+        <!-- Carrossel (cards + setas injetados por products.js) -->
+        <div class="acessorios-carousel">
+          <div class="acessorios-carousel__track" id="acessoriosTrack"
+               role="list" aria-label="Acessórios disponíveis" tabindex="0"></div>
+        </div>
       </div>
     </section>
 
@@ -356,55 +391,6 @@
 
     </section><!-- /.view[data-view=bemvindo] -->
 
-    <!-- ============================================================
-         ABA 2 · APARELHOS — catálogo + filtros. Aberta pelo botão
-         "Aparelhos" do dock, e também quando o cliente escolhe um tipo no
-         dropdown "Categorias" (que já aplica o filtro correspondente).
-         MESMA aparência do catálogo já criado e MESMA dinâmica de pedido:
-         cada card abre o WhatsApp pré-preenchido (products.js, intacto).
-         ============================================================ -->
-    <section class="view" data-view="aparelhos" aria-label="Aparelhos">
-      <section class="catalogo" id="catalogo">
-        <div class="container">
-          <div class="section-head">
-            <p class="eyebrow reveal">Aparelhos</p>
-            <h2 class="section-title reveal">Escolha o seu e fale com a gente.</h2>
-            <p class="section-lead reveal">
-              Filtre por condição ou marca. Em cada aparelho, o botão já abre o
-              WhatsApp com a mensagem pronta (modelo, cor, condição e valor).
-            </p>
-          </div>
-
-          <!-- PLACEHOLDER: catálogo abaixo é 100% DE EXEMPLO (dados em
-               assets/js/products.js). Trocar por catálogo e fotos reais.
-               Os filtros (.filters) e os cards (.vitrine-grid) são
-               injetados por products.js. -->
-          <div class="vitrine-grid"></div>
-        </div>
-      </section>
-    </section><!-- /.view[data-view=aparelhos] -->
-
-    <!-- ============================================================
-         ABA 3 · ACESSÓRIOS — aba própria, mesma dinâmica de pedido
-         via WhatsApp. Aberta pelo botão "Acessórios" do dock.
-         ============================================================ -->
-    <section class="view" data-view="acessorios" aria-label="Acessórios">
-      <section class="acessorios" id="acessorios">
-        <div class="container">
-          <div class="section-head">
-            <p class="eyebrow reveal">Acessórios</p>
-            <h2 class="section-title reveal">Complete a compra do seu jeito.</h2>
-            <p class="section-lead reveal">
-              Capas, películas, carregadores e fones — dados de exemplo, ajustar
-              ao estoque real do MARCELINHO.
-            </p>
-          </div>
-          <!-- PLACEHOLDER: acessórios de exemplo (products.js) -->
-          <div class="acessorios-grid"></div>
-        </div>
-      </section>
-    </section><!-- /.view[data-view=acessorios] -->
-
   </main>
 
   <!-- ===================== FOOTER ===================== -->
@@ -433,13 +419,13 @@
         <div class="footer__col">
           <h4 class="footer__heading">Navegação</h4>
           <ul>
-            <!-- Links do rodapé usam data-target -> passam pelo roteador de abas
-                 (SPA). Serviços vive na aba Bem-vindo: troca de aba E rola até a
-                 seção (data-scroll). Assim nenhum link aponta para seção oculta. -->
-            <li><a href="#bemvindo" data-target="bemvindo">Início</a></li>
-            <li><a href="#aparelhos" data-target="aparelhos">Aparelhos</a></li>
-            <li><a href="#acessorios" data-target="acessorios">Acessórios</a></li>
-            <li><a href="#servicos" data-target="bemvindo" data-scroll="#servicos">Serviços</a></li>
+            <!-- Página ÚNICA: os links rolam suavemente até a seção
+                 correspondente (nav.js intercepta âncoras internas). Aparelhos
+                 -> a vitrine (#showroom); Acessórios -> o carrossel (#acessorios). -->
+            <li><a href="#top">Início</a></li>
+            <li><a href="#showroom">Aparelhos</a></li>
+            <li><a href="#acessorios">Acessórios</a></li>
+            <li><a href="#servicos">Serviços</a></li>
           </ul>
         </div>
         <div class="footer__col">
@@ -457,8 +443,10 @@
             <!-- PLACEHOLDER: horário e redes reais -->
             <li>Seg a Sex: 00h — 00h</li>
             <li>Sábado: 00h — 00h</li>
-            <!-- PLACEHOLDER FASE 2: @ real do Instagram do cliente. -->
-            <li><a href="#instagram" data-target="bemvindo" data-scroll="#instagram">Instagram — @marcelinho</a></li>
+            <!-- PLACEHOLDER FASE 2: @ real do Instagram do cliente (link quando
+                 houver o perfil oficial). Sem seção Instagram na página única,
+                 fica como texto p/ não gerar link morto. -->
+            <li>Instagram — @marcelinho</li>
           </ul>
         </div>
       </nav>
@@ -481,53 +469,6 @@
     <span class="float-whatsapp__label">WhatsApp</span>
   </a>
 
-  <!-- ============================================================
-       DOCK DE NAVEGAÇÃO FLUTUANTE (direita) — espelha o Erick Garcia (Regra 80).
-       Navegação in-page tipo SPA (NÃO abre link externo):
-        • CATEGORIAS  = botão com seta que abre um dropdown com os TIPOS de
-          item (Novos/Seminovos/Ofertas/marcas). Escolher um tipo troca para a
-          aba Aparelhos JÁ FILTRADA por aquele tipo. As opções do dropdown são
-          injetadas por products.js (fonte única = FILTERS), e cada uma chama
-          applyFilter(tipo,valor) + abre a aba Aparelhos.
-        • APARELHOS   = abre a aba de aparelhos (data-target).
-        • ACESSÓRIOS  = abre a aba de acessórios (data-target).
-       Serviços e Contato NÃO têm botão aqui (ficam na aba Bem-vindo, embaixo).
-       ============================================================ -->
-  <nav class="nav-dock" aria-label="Navegação rápida">
-    <div class="nav-dock__group">
-      <button class="nav-dock__btn" id="dockCategorias" type="button"
-              aria-expanded="false" aria-controls="dockCategoriasMenu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
-        </svg>
-        <span>Categorias</span>
-        <svg class="nav-dock__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <!-- Opções (TIPOS) injetadas por products.js a partir de FILTERS.
-           Disclosure honesto: lista de botões (sem role=menu, que prometeria
-           navegação por setas não implementada). aria-expanded no botão. -->
-      <div class="nav-dock__menu" id="dockCategoriasMenu" aria-label="Tipos de aparelho" hidden></div>
-    </div>
-
-    <button class="nav-dock__btn" type="button" data-target="aparelhos" aria-current="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-        <rect x="6" y="2" width="12" height="20" rx="2.5"/>
-        <path d="M10 18h4" stroke-linecap="round"/>
-      </svg>
-      <span>Aparelhos</span>
-    </button>
-
-    <button class="nav-dock__btn" type="button" data-target="acessorios" aria-current="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-        <path d="M4 8h16l-1 12H5L4 8Z"/>
-        <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" stroke-linecap="round"/>
-      </svg>
-      <span>Acessórios</span>
-    </button>
-  </nav>
-
   <!-- JS vanilla, sem dependências. Ordem: nav -> products -> scroll-reveal -> main.
        products.js injeta os cards .reveal ANTES de scroll-reveal.js observá-los. -->
   <!-- Three.js p/ o celular 3D da INTRO — mesma fonte/versão do playbook
@@ -538,11 +479,15 @@
   </script>
   <script src="assets/js/nav.js" defer></script>
   <script src="assets/js/products.js" defer></script>
+  <!-- Vitrine interativa premium (coverflow) — reusa PRODUCTS[] de products.js -->
+  <script src="assets/js/showroom.js" defer></script>
   <script src="assets/js/scroll-reveal.js" defer></script>
   <script src="assets/js/hero-shader.js" defer></script>
   <!-- INTRO cinematográfica (módulo ESM = deferido por padrão; se falhar o
        import/CDN, a intro fica estática com CTA e o site segue acessível) -->
   <script type="module" src="assets/js/hero-iphone-3d.js"></script>
+  <!-- Indicador de scroll da abertura (elemento sobreposto, fora do #intro) -->
+  <script src="assets/js/scroll-cue.js" defer></script>
   <!-- Vídeo de fundo amarrado ao scroll (bidirecional) — autocontido -->
   <!-- DESATIVADO TEMPORARIAMENTE (pedido João 2026-07-29): religar removendo o comentário -->
   <!-- <script src="assets/js/bg-scroll-video.js" defer></script> -->
