@@ -22,7 +22,7 @@
   var successEl = form.querySelector(".form-success");
 
   function getConfigNumber() {
-    return (window.MARCELINHO_CONFIG && window.MARCELINHO_CONFIG.whatsapp) || "55SEUNUMERO";
+    return (window.MARCELINHO_CONFIG && window.MARCELINHO_CONFIG.whatsapp) || "5515997031149";
   }
 
   function setError(field, message) {
