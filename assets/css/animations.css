@@ -102,16 +102,22 @@ body.intro-done { animation: introReveal 460ms var(--ease-out) both; }
 /* =========================================================
    SHOWROOM: micro-flutuação permanente + troca de info
    ---------------------------------------------------------
-   "Objeto premium suspenso": sobe/desce discreto + pequena rotação
-   contínua, só transform (sem reflow). Aplicada no .showroom-phone__float
-   (elemento INTERNO), separada da transição de posição/seleção do card,
-   p/ as duas não brigarem. Como é keyframe CSS, o browser pausa sozinho
-   quando a aba (ou a .view via display:none) fica oculta — nada conta
-   tempo escondido. Reduced-motion desliga tudo (abaixo).
+   "Objeto premium suspenso / vivo" (fiel à bola do SLAMDUNK e ao giro do
+   S24 3D central): sobe/desce discreto (translateY) + leve GIRO contínuo
+   tipo turntable (rotateY) + leve balanço (rotateZ), só transform (sem
+   reflow, GPU). Aplicada na SUBCAMADA .showroom-phone__float (elemento
+   INTERNO), separada da transição de posição/seleção do card e das custom
+   props do coverflow (--tx/--ty/--ry/--sc no .showroom-phone/__body), p/ as
+   duas não brigarem. Vale p/ TODOS os cards (central + laterais); nos
+   laterais lê discreto de graça porque o coverflow já os recua (escala
+   menor + blur + opacidade). rotateY em ±5° nunca cruza 90° → jamais revela
+   a face traseira vazia do mockup. Como é keyframe CSS, o browser pausa
+   sozinho quando a aba (ou a .view via display:none) fica oculta — nada
+   conta tempo escondido. Reduced-motion desliga tudo (abaixo).
    ========================================================= */
 @keyframes showroomFloat {
-  0%, 100% { transform: translateY(0) rotateZ(-0.6deg); }
-  50%      { transform: translateY(-12px) rotateZ(0.6deg); }
+  0%, 100% { transform: translateY(0)     rotateY(-5deg) rotateZ(-0.6deg); }
+  50%      { transform: translateY(-12px) rotateY(5deg)  rotateZ(0.6deg); }
 }
 /* Troca de aparelho: a info some/reaparece com leve subida (fade+slide). */
 @keyframes showroomInfoSwap {

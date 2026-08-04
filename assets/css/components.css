@@ -641,6 +641,38 @@ textarea.form-control { min-height: 110px; resize: vertical; }
     opacity 520ms var(--ease-out);
 }
 .showroom-phone.is-center { cursor: default; }
+
+/* Palco 3D do aparelho em destaque (Samsung Galaxy S24), injetado por
+   showroom.js sobre o slot central do coverflow. pointer-events:none → os
+   cliques passam p/ os cards (central = no-op; laterais navegam). z entre o
+   card central (100) e o hover lateral (130): a peça 3D fica em destaque mas
+   o hover de pré-seleção de um lateral ainda o traz à frente, sem quebrar o
+   coverflow. Tamanho ~ card central + folga p/ o giro/flutuação não cortarem. */
+.showroom__hero3d {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240px;
+  height: 420px;
+  transform: translate(-50%, -50%);
+  z-index: 110;
+  pointer-events: none;
+}
+.showroom__hero3d canvas { width: 100%; height: 100%; display: block; }
+/* Com o 3D ativo (class has-3d), esconde só o CORPO do card central (o mockup
+   CSS) — a sombra (grounding) e os cards laterais seguem intactos. Transição
+   casa com o giro coverflow (720ms) p/ o card que entra/sai do centro trocar
+   suavemente com a peça 3D. */
+.showroom.has-3d .showroom-phone.is-center .showroom-phone__body {
+  opacity: 0;
+  transition: opacity 620ms var(--ease-out);
+}
+/* Peça 3D fica suspensa só com o halo (como a Hero): a sombra de chão do card
+   central sairia deslocada da flutuação — some junto com o corpo. */
+.showroom.has-3d .showroom-phone.is-center .showroom-phone__shadow {
+  opacity: 0;
+  transition: opacity 620ms var(--ease-out);
+}
 /* Pré-seleção (hover): sobe escala, aproxima a "câmera", tira o blur, mais luz.
    filter/opacity/z-index estão aqui (não inline) p/ o :hover poder vencê-los. */
 .showroom-phone:not(.is-center):hover,
@@ -853,6 +885,8 @@ textarea.form-control { min-height: 110px; resize: vertical; }
   /* Escala o track inteiro: encolhe cards E o espalhamento juntos no mobile,
      sem recalcular px em JS (posições estão em coordenadas do track). */
   .showroom__track { transform: scale(0.66); }
+  /* O palco 3D não vive no track: acompanha a mesma escala do card central. */
+  .showroom__hero3d { transform: translate(-50%, -50%) scale(0.66); }
   .showroom__arrow { width: 40px; height: 40px; }
 }
 
